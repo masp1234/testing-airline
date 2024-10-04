@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 
 namespace backend
 {
@@ -6,7 +7,11 @@ namespace backend
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            var connectionString = builder.Configuration.GetConnectionString("Default");
+            builder.Services.AddDbContext<DatabaseContaxt>(options =>
+            {
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+            });
             // Add services to the container.
 
             builder.Services.AddControllers();
