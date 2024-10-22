@@ -2,9 +2,24 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 WORKDIR /app
 
-# Copy the project file and restore any dependencies (use .csproj for the project name)
-COPY *.csproj ./
+# Copy the solution file to ensure correct structure for restore
+COPY ../backend.sln ./
+
+# Copy project files for the backend application
+COPY backend/*.csproj ./backend/
+# Restore dependencies for the backend
 RUN dotnet restore
 
-# Keep the container alive
+# Copy the rest of the backend application code
+COPY backend/. ./backend/
+
+# Copy project files for the backend tests
+COPY backend.Tests/*.csproj ./backend.Tests/
+# Restore dependencies for the backend tests
+RUN dotnet restore ./backend.Tests/YourProject.Tests.csproj
+
+# Copy the rest of the backend test code
+COPY backend.Tests/. ./backend.Tests/
+
+# Keep the container alive (to run tests)
 ENTRYPOINT ["tail", "-f", "/dev/null"]

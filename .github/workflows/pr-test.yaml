@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests inside container
         run: |
-          docker exec test-container dotnet test --no-build --verbosity normal
+          docker exec test-container dotnet test --no-build --verbosity normal ./backend.Tests/backend.Tests.csproj
   push:
     name: Push Docker image
     runs-on: ubuntu-latest
