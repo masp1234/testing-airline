@@ -25,6 +25,8 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: false  # Build the image but don't push yet
+          # Load image into docker (if no load happens, the image won't be available in the next step)
+          load: true
           tags: testimage
 
       - name: Run container from built image
