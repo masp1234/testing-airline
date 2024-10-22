@@ -3,17 +3,17 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY ./backend/*.csproj ./backend/
-RUN dotnet restore ./backend/backend.csproj
+COPY backend.csproj .
+RUN dotnet restore backend.csproj
 
 # Copy everything else and build
-COPY ./backend/. ./backend/
-RUN dotnet publish ./backend/backend.csproj -c Release -o out
+COPY . .
+RUN dotnet publish backend.csproj -c Release -o out
 
 # Stage 2: Run the app
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/backend/out .
+COPY --from=build /app/out .
 
 # Expose the appropriate port (for example, 80 or 5000 depending on your app)
 EXPOSE 80
