@@ -22,7 +22,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v2
         with:
-          context: .
+          context: ./backend
           file: ./backend/Dockerfile
           push: false  # Build the image but don't push yet
           tags: testimage
