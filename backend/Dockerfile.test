@@ -1,0 +1,26 @@
+# Use the official .NET Core SDK as a parent image
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+
+# Copy the solution file to ensure correct structure for restore
+COPY ../backend.sln ./
+
+# Copy project files for the backend application
+COPY ./backend/backend.csproj ./backend/
+# Restore dependencies for the backend
+RUN dotnet restore ./backend/backend.csproj
+
+# Copy the rest of the backend application code
+COPY ./backend/. ./backend/
+
+# Copy project files for the backend tests
+COPY ../backend.Tests/backend.Tests.csproj ./backend.Tests/
+# Restore dependencies for the backend tests
+RUN dotnet restore ./backend.Tests/backend.Tests.csproj
+
+# Copy the rest of the backend test code
+COPY ../backend.Tests/. ./backend.Tests/
+
+# Keep the container alive (to run tests) - this is needed because
+# the app is not keeping the container alive by itself (by running)
+ENTRYPOINT ["tail", "-f", "/dev/null"]
