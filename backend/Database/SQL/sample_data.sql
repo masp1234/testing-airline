@@ -1,4 +1,4 @@
-﻿-- Sample data for `airlines`
+-- Sample data for `airlines`
 INSERT INTO `airline_project`.`airlines` (`name`) VALUES
 ('Delta Airlines'),
 ('United Airlines'),
