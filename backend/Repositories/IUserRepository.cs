@@ -6,6 +6,8 @@ namespace backend.Repositories
     {
         Task<List<User>> GetAll();
 
-        Task<User> Add(User user);
+        Task<User?> GetByEmail(string email);
+
+        Task Create(User user);
     }
 }

@@ -4,6 +4,8 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 
 -- -----------------------------------------------------
 -- Schema airline_project
+
+DROP SCHEMA IF EXISTS `airline_project`;
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `airline_project` DEFAULT CHARACTER SET utf8mb3 ;
 USE `airline_project` ;
@@ -85,7 +87,8 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `airline_project`.`users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(80) NOT NULL,
-  `password` VARCHAR(25) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
+  `role` VARCHAR(8) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
 ENGINE = InnoDB

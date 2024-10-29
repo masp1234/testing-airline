@@ -13,15 +13,23 @@ namespace backend.Repositories
         {
             _context = context;
         }
-        public Task<User> Add(User user)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<List<User>> GetAll()
         {
             var users = await _context.Users.ToListAsync();
             return users;
+        }
+
+        public async Task<User?> GetByEmail(string email)
+        {
+            User? user = await _context.Users.SingleOrDefaultAsync(user => user.Email == email);
+            return user;
+        }
+
+        public async Task Create(User user)
+        {
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

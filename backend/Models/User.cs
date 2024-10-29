@@ -12,5 +12,12 @@ public partial class User
 
     public string Password { get; set; } = null!;
 
+    public UserRole Role { get; set; }
+
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+}
+
+public enum UserRole {
+    Admin,
+    Customer
 }

@@ -64,17 +64,17 @@ INSERT INTO `airline_project`.`airports` (`name`, `code`, `city_id`) VALUES
 ('Phoenix Sky Harbor International Airport', 'PHX', 10);
 
 -- Sample data for `users`
-INSERT INTO `airline_project`.`users` (`email`, `password`) VALUES
-('john.doe1@example.com', 'password1'),
-('jane.smith2@example.com', 'password2'),
-('michael.jones3@example.com', 'password3'),
-('emily.johnson4@example.com', 'password4'),
-('william.brown5@example.com', 'password5'),
-('olivia.davis6@example.com', 'password6'),
-('liam.wilson7@example.com', 'password7'),
-('sophia.moore8@example.com', 'password8'),
-('james.taylor9@example.com', 'password9'),
-('isabella.miller10@example.com', 'password10');
+INSERT INTO `airline_project`.`users` (`email`, `password`, `role`) VALUES
+('john.doe1@example.com', 'password1', 'Admin'),
+('jane.smith2@example.com', 'password2', 'Customer'),
+('michael.jones3@example.com', 'password3', 'Admin'),
+('emily.johnson4@example.com', 'password4', 'Customer'),
+('william.brown5@example.com', 'password5', 'Admin'),
+('olivia.davis6@example.com', 'password6', 'Customer'),
+('liam.wilson7@example.com', 'password7', 'Admin'),
+('sophia.moore8@example.com', 'password8', 'Customer'),
+('james.taylor9@example.com', 'password9', 'Admin'),
+('isabella.miller10@example.com', 'password10', 'Customer');
 
 -- Sample data for `bookings`
 INSERT INTO `airline_project`.`bookings` (`confirmation_number`, `user_id`) VALUES

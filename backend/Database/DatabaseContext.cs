@@ -45,9 +45,6 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql("name=ConnectionStrings:Default", ServerVersion.Parse("9.0.1-mysql"));
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -359,8 +356,14 @@ public partial class DatabaseContext : DbContext
                 .HasMaxLength(80)
                 .HasColumnName("email");
             entity.Property(e => e.Password)
-                .HasMaxLength(25)
+                .HasMaxLength(100)
                 .HasColumnName("password");
+
+            // CONSIDER A STRING INSTEAD OF ENUM
+            entity.Property(e => e.Role)
+                .HasConversion<string>()
+                .HasColumnName("role");
+                
         });
 
         OnModelCreatingPartial(modelBuilder);
