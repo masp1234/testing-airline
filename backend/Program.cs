@@ -1,6 +1,9 @@
+using backend.Config;
 using backend.Database;
 using backend.Repositories;
+using backend.Services;
 using dotenv.net;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -22,6 +25,9 @@ namespace backend
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             // Add services to the container.
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
