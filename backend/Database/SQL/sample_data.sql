@@ -122,43 +122,30 @@ INSERT INTO `airline_project`.`passengers` (`name`) VALUES
 ('Isabella Miller');
 
 -- Sample data for `seats`
-INSERT INTO `airline_project`.`seats` (`identifier`, `airplane_id`) VALUES
-('1A', 1),
-('1B', 1),
-('2A', 2),
-('2B', 2),
-('3A', 3),
-('3B', 3),
-('4A', 4),
-('4B', 4),
-('5A', 5),
-('5B', 5);
-
--- Sample data for `flight_seats`
-INSERT INTO `airline_project`.`flight_seats` (`flight_id`, `seat_id`) VALUES
-(1, 1),
-(1, 2),
-(2, 3),
-(2, 4),
-(3, 5),
-(3, 6),
-(4, 7),
-(4, 8),
-(5, 9),
-(5, 10);
+INSERT INTO `airline_project`.`seats` (`identifier`, `airplane_id`, `flight_class_id`) VALUES
+('1A', 1, 3),
+('1B', 1, 1),
+('2A', 2, 1),
+('2B', 2, 3),
+('3A', 3, 2),
+('3B', 3, 2),
+('4A', 4, 2),
+('4B', 4, 1),
+('5A', 5, 3),
+('5B', 5, 1);
 
 -- Sample data for `tickets`
-INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `flight_class_id`, `tickets_booking_id`, `seat_id`) VALUES
-(300.00, 'TCK1001', 1, 1, 1, 1, 1),
-(500.00, 'TCK1002', 2, 2, 2, 2, 4),
-(250.00, 'TCK1003', 3, 3, 1, 3, 6),
-(450.00, 'TCK1004', 4, 4, 3, 4, 8),
-(350.00, 'TCK1005', 5, 5, 1, 5, 9),
-(600.00, 'TCK1006', 6, 6, 2, 6, 10),
-(200.00, 'TCK1007', 7, 7, 1, 7, 2),
-(550.00, 'TCK1008', 8, 8, 2, 8, 4),
-(400.00, 'TCK1009', 9, 9, 1, 9, 6),
-(700.00, 'TCK1010', 10, 10, 3, 10, 8);
+INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`, `seat_id`) VALUES
+(300.00, 'TCK1001', 1, 1, 1, 1),
+(500.00, 'TCK1002', 2, 2, 2, 4),
+(250.00, 'TCK1003', 3, 3, 3, 6),
+(450.00, 'TCK1004', 4, 4, 4, 8),
+(350.00, 'TCK1005', 5, 5, 5, 9),
+(600.00, 'TCK1006', 6, 6, 6, 10),
+(200.00, 'TCK1007', 7, 7, 7, 2),
+(550.00, 'TCK1008', 8, 8, 8, 4),
+(400.00, 'TCK1009', 9, 9, 9, 6),
+(700.00, 'TCK1010', 10, 10, 10, 8);
 
 -- Sample data for `invoices`
 INSERT INTO `airline_project`.`invoices` (`amount_due`, `due_date`, `date_paid`, `is_paid`, `invoice_booking_id`) VALUES
