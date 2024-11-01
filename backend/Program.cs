@@ -1,10 +1,14 @@
+using System.Text;
 using backend.Config;
 using backend.Database;
 using backend.Repositories;
 using backend.Services;
 using dotenv.net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend
 {
@@ -20,6 +24,29 @@ namespace backend
             {
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             });
+            
+            ///////
+            string? jwtSecret = Environment.GetEnvironmentVariable("JWTSecretKey")?? builder.Configuration["JwtSettings:Secret_key"];
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Environment.GetEnvironmentVariable("Issuer"),
+                    ValidAudience = Environment.GetEnvironmentVariable("Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey")))
+                };
+            });
+            builder.Services.AddControllersWithViews();
+
+            
 
             // Register / add repositories to the container
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -42,12 +69,15 @@ namespace backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            ///
             app.UseHttpsRedirection();
-
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
             app.UseAuthorization();
-
-
+            app.UseAuthentication();
             app.MapControllers();
 
             app.Run();

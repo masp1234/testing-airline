@@ -1,7 +1,12 @@
-﻿using AutoMapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
 using backend.Dtos;
 using backend.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualBasic;
 
 namespace backend.Services
 {
@@ -30,6 +35,21 @@ namespace backend.Services
             var mappedUser = _mapper.Map<UserResponse>(user);
             return mappedUser;
         }
+        public async Task<JwtRequest?> CheckUserByEmail(string email)
+        {
+            User? user = await _userRepository.GetByEmail(email);
+            var mappedUser = _mapper.Map<JwtRequest>(user);
+            return mappedUser;
+        }
+        public Boolean CheckPasswordValidation(string requestedPassword, string userPassword, JwtRequest user)
+        {
+            var passwordHasher = new PasswordHasher<JwtRequest>();
+            var verificationResult = passwordHasher.VerifyHashedPassword(user, userPassword, requestedPassword);
+             if (verificationResult == PasswordVerificationResult.Success){
+                return true;
+             }
+            return false;
+        }
 
         public async Task CreateUser(UserCreationRequest userCreationRequest)
         {
@@ -39,9 +59,30 @@ namespace backend.Services
                                             
             };
 
-            string hashedPassword = _passwordHasher.HashPassword(userToCreate, userCreationRequest.Email);
+            string hashedPassword = _passwordHasher.HashPassword(userToCreate, userCreationRequest.Password);
             userToCreate.Password = hashedPassword;
             await _userRepository.Create(userToCreate);
+        }
+
+        public string GenerateJwtToken(JwtRequest user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim("email", user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey")));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: Environment.GetEnvironmentVariable("Issuer"),
+                audience: Environment.GetEnvironmentVariable("Audience"),
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

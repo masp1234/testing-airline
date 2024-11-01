@@ -8,6 +8,7 @@ namespace backend.Config
 
         public MappingProfile() {
             CreateMap<User, UserResponse>();
+            CreateMap<User, JwtRequest>();
         }
     }
 }
