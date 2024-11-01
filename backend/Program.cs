@@ -26,7 +26,6 @@ namespace backend
             });
             
             ///////
-            string? jwtSecret = Environment.GetEnvironmentVariable("JWTSecretKey")?? builder.Configuration["JwtSettings:Secret_key"];
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
