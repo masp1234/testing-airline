@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `travel_time` INT NOT NULL,
   `kilometers` VARCHAR(45) NULL DEFAULT NULL,
   `flights_airline_id` INT NOT NULL,
+  `flights_airplane_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `departure_port_idx` (`departure_port` ASC) VISIBLE,
   INDEX `arrival_port_idx` (`arrival_port` ASC) VISIBLE,
@@ -146,7 +147,10 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
     REFERENCES `airline_project`.`airports` (`id`),
   CONSTRAINT `flights_airline_id`
     FOREIGN KEY (`flights_airline_id`)
-    REFERENCES `airline_project`.`airlines` (`id`))
+    REFERENCES `airline_project`.`airlines` (`id`),
+  CONSTRAINT `flights_airplane_id`
+    FOREIGN KEY (`flights_airplane_id`)
+    REFERENCES `airline_project`.`airplanes` (`id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 

@@ -22,6 +22,10 @@ public partial class Flight
 
     public int FlightsAirlineId { get; set; }
 
+    public int FlightsAirplaneId { get; set; }
+
+    public virtual Airplane Airplane { get; set; } = null;
+
     public virtual Airport ArrivalPortNavigation { get; set; } = null!;
 
     public virtual Airport DeparturePortNavigation { get; set; } = null!;

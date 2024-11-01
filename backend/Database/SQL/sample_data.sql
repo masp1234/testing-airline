@@ -96,17 +96,17 @@ INSERT INTO `airline_project`.`flight_classes` (`name`) VALUES
 ('First Class');
 
 -- Sample data for `flights`
-INSERT INTO `airline_project`.`flights` (`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `flights_airline_id`) VALUES
-('DL100', 1, 2, '2024-12-01 08:00:00', 360, 1),
-('UA200', 2, 3, '2024-12-01 10:00:00', 240, 2),
-('AA300', 3, 4, '2024-12-02 12:00:00', 180, 3),
-('SW400', 4, 5, '2024-12-03 14:00:00', 300, 4),
-('JB500', 5, 6, '2024-12-04 16:00:00', 420, 5),
-('AL600', 6, 7, '2024-12-05 18:00:00', 180, 6),
-('SP700', 7, 8, '2024-12-06 20:00:00', 360, 7),
-('FR800', 8, 9, '2024-12-07 22:00:00', 240, 8),
-('HA900', 9, 10, '2024-12-08 06:00:00', 540, 9),
-('AL1000', 10, 1, '2024-12-09 08:00:00', 300, 10);
+INSERT INTO `airline_project`.`flights` (`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `flights_airline_id`, `flights_airplane_id`) VALUES
+('DL100', 1, 2, '2024-12-01 08:00:00', 360, 1, 1),
+('UA200', 2, 3, '2024-12-01 10:00:00', 240, 2, 2),
+('AA300', 3, 4, '2024-12-02 12:00:00', 180, 3, 3),
+('SW400', 4, 5, '2024-12-03 14:00:00', 300, 4, 3),
+('JB500', 5, 6, '2024-12-04 16:00:00', 420, 5, 4),
+('AL600', 6, 7, '2024-12-05 18:00:00', 180, 6, 4),
+('SP700', 7, 8, '2024-12-06 20:00:00', 360, 7, 7),
+('FR800', 8, 9, '2024-12-07 22:00:00', 240, 8, 7),
+('HA900', 9, 10, '2024-12-08 06:00:00', 540, 9, 8),
+('AL1000', 10, 1, '2024-12-09 08:00:00', 300, 10, 10);
 
 -- Sample data for `passengers`
 INSERT INTO `airline_project`.`passengers` (`name`) VALUES
