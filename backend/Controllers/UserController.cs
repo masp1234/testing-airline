@@ -1,19 +1,19 @@
 ﻿using backend.Dtos;
 using backend.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("/api/mysql/[controller]")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        public UsersController(IUserService userService)
         {
             _userService = userService;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
@@ -29,7 +29,6 @@ namespace backend.Controllers
 
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserCreationRequest userCreationRequest)
         {
@@ -55,6 +54,36 @@ namespace backend.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create a new user." });
 
             }
+        }
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] JwtRequest request)
+        {
+            var user = await _userService.CheckUserByEmail(request.Email);
+
+            if (user == null) return NotFound(new {message = "User not exist!"});
+
+            if (user != null)
+            {
+                // Initialize PasswordHasher to verify password
+                Boolean passwordValidation =_userService.CheckPasswordValidation(request.Password, user.Password, user);
+                // Check if the password is correct
+                if (passwordValidation)
+                {
+                    // Generate JWT token after successful password verification
+                    var token = _userService.GenerateJwtToken(user);
+
+                    Response.Cookies.Append("AuthToken", token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict
+                    });
+
+                    return Ok(new { message = "Login successful: " });
+                }
+            }
+
+            return Unauthorized();
         }
     }
 }
