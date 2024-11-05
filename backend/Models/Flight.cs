@@ -35,4 +35,17 @@ public partial class Flight
     public virtual Airline FlightsAirline { get; set; } = null!;
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+    public override string ToString()
+    {
+        return $"Flight [Id={Id}, FlightCode={FlightCode}, DeparturePort={DeparturePort}, ArrivalPort={ArrivalPort}, " +
+               $"DepartureTime={DepartureTime}, TravelTime={TravelTime}, Kilometers={Kilometers}, FlightsAirlineId={FlightsAirlineId}, " +
+               $"FlightsAirplaneId={FlightsAirplaneId}, Airplane={Airplane?.ToString() ?? "null"}, " +
+               $"ArrivalPortNavigation={ArrivalPortNavigation?.ToString() ?? "null"}, " +
+               $"DeparturePortNavigation={DeparturePortNavigation?.ToString() ?? "null"}, " +
+               $"FlightSeatsCount={FlightSeats.Count}, Airline={FlightsAirline?.ToString() ?? "null"}, TicketsCount={Tickets.Count}]";
+    }
 }
+
+
+

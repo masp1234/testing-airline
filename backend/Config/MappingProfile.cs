@@ -8,6 +8,12 @@ namespace backend.Config
 
         public MappingProfile() {
             CreateMap<User, UserResponse>();
+            CreateMap<FlightCreationRequest, Flight>()
+               .ForMember(dest => dest.FlightsAirlineId, opt => opt.MapFrom(src => src.AirlineId))
+               .ForMember(dest => dest.FlightsAirplaneId, opt => opt.MapFrom(src => src.AirplaneId))
+               .ForMember(dest => dest.DeparturePort, opt => opt.MapFrom(src => src.DepartureAirportId))
+               .ForMember(dest => dest.ArrivalPort, opt => opt.MapFrom(src => src.ArrivalAirportId))
+               .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => src.DepartureDateTime));
         }
     }
 }

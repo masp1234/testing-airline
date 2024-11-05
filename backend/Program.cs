@@ -12,8 +12,20 @@ namespace backend
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
             DotEnv.Load();
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173")
+                              .AllowCredentials()
+                              .AllowAnyHeader();
+                    });
+            });
             // Try to load a connection string from .env. If it does not exist, get it from an appsettings.json file.
             string? connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("Default");
             builder.Services.AddDbContext<DatabaseContext>(options =>
@@ -23,10 +35,12 @@ namespace backend
 
             // Register / add repositories to the container
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 
             // Add services to the container.
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IFlightService, FlightService>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddControllers();
@@ -42,6 +56,7 @@ namespace backend
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors();
 
             app.UseHttpsRedirection();
 
