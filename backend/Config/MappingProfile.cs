@@ -10,7 +10,6 @@ namespace backend.Config
         public MappingProfile() {
             CreateMap<User, UserResponse>();
 
-
             CreateMap<FlightCreationRequest, Flight>()
                .ForMember(dest => dest.FlightsAirlineId, opt => opt.MapFrom(src => src.AirlineId))
                .ForMember(dest => dest.FlightsAirplaneId, opt => opt.MapFrom(src => src.AirplaneId))
@@ -19,7 +18,10 @@ namespace backend.Config
                .ForMember(dest => dest.DepartureTime, opt => opt.MapFrom(src => src.DepartureDateTime));
             
             CreateMap<Flight, FlightResponse>();
+
             CreateMap<User, JwtRequest>();
+
+            CreateMap<Airport, AirportResponse>();
         }
     }
 }
