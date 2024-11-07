@@ -1,3 +1,5 @@
+﻿using AutoMapper;
+using backend.Models;
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -55,7 +57,7 @@ namespace backend.Services
         {
             User userToCreate = new User { 
                 Email = userCreationRequest.Email,
-                Role = UserRole.Customer
+                Role = UserRole.Customer.ToString()
                                             
             };
 

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend.Models;
+using System.Text.Json.Serialization;
 
-namespace backend;
+namespace backend.Models;
 
 public partial class Flight
 {
@@ -18,21 +18,30 @@ public partial class Flight
 
     public int TravelTime { get; set; }
 
-    public string? Kilometers { get; set; }
+    public int? Kilometers { get; set; }
+
+    public decimal Price { get; set; }
+
+    public int EconomyClassSeatsAvailable { get; set; }
+    public int FirstClassSeatsAvailable { get; set; }
+
+    public int BusinessClassSeatsAvailable { get; set; }
 
     public int FlightsAirlineId { get; set; }
 
     public int FlightsAirplaneId { get; set; }
 
-    public virtual Airplane Airplane { get; set; } = null;
-
+    public string IdempotencyKey { get; set; }
+    [JsonIgnore]
     public virtual Airport ArrivalPortNavigation { get; set; } = null!;
 
+    [JsonIgnore]
     public virtual Airport DeparturePortNavigation { get; set; } = null!;
 
-    public virtual ICollection<FlightSeat> FlightSeats { get; set; } = new List<FlightSeat>();
-
+    [JsonIgnore]
     public virtual Airline FlightsAirline { get; set; } = null!;
+    [JsonIgnore]
+    public virtual Airplane FlightsAirplane { get; set; } = null!;
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
