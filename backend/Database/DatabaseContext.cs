@@ -35,8 +35,6 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<Passenger> Passengers { get; set; }
 
-    public virtual DbSet<Seat> Seats { get; set; }
-
     public virtual DbSet<State> States { get; set; }
 
     public virtual DbSet<Ticket> Tickets { get; set; }
@@ -174,6 +172,12 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Kilometers)
                 .HasMaxLength(45)
                 .HasColumnName("kilometers");
+
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.EconomyClassSeatsAvailable).HasColumnName("economy_class_seats_available");
+            entity.Property(e => e.BusinessClassSeatsAvailable).HasColumnName("business_class_seats_available");
+            entity.Property(e => e.FirstClassSeatsAvailable).HasColumnName("first_class_seats_available");
+
             entity.Property(e => e.TravelTime).HasColumnName("travel_time");
             entity.Property(e => e.IdempotencyKey).HasColumnName("idempotency_key");
 
@@ -243,34 +247,6 @@ public partial class DatabaseContext : DbContext
                 .HasColumnName("name");
         });
 
-        modelBuilder.Entity<Seat>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("seats");
-
-            entity.HasIndex(e => e.AirplaneId, "airplane_id_idx");
-
-            entity.HasIndex(e => e.FlightClassId, "flight_class_id_idx");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AirplaneId).HasColumnName("airplane_id");
-            entity.Property(e => e.FlightClassId).HasColumnName("flight_class_id");
-            entity.Property(e => e.Identifier)
-                .HasMaxLength(45)
-                .HasColumnName("identifier");
-
-            entity.HasOne(d => d.Airplane).WithMany(p => p.Seats)
-                .HasForeignKey(d => d.AirplaneId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("airplane_id");
-
-            entity.HasOne(d => d.FlightClass).WithMany(p => p.Seats)
-                .HasForeignKey(d => d.FlightClassId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("flight_class_id");
-        });
-
         modelBuilder.Entity<State>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -299,7 +275,6 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.FlightId).HasColumnName("flight_id");
             entity.Property(e => e.PassengerId).HasColumnName("passenger_id");
             entity.Property(e => e.Price).HasColumnName("price");
-            entity.Property(e => e.SeatId).HasColumnName("seat_id");
             entity.Property(e => e.TicketNumber)
                 .HasMaxLength(45)
                 .HasColumnName("ticket_number");

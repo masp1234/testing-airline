@@ -14,6 +14,13 @@ namespace backend.Services
             _mapper = mapper;
             
                 }
+
+        public async Task<List<FlightResponse>> GetAllFlights()
+        {
+            var flights = await _flightRepository.GetAll();
+            var mappedFlights = _mapper.Map<List<FlightResponse>>(flights);
+            return mappedFlights;
+        }
         public async Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest)
         {
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);

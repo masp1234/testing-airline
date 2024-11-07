@@ -96,17 +96,20 @@ INSERT INTO `airline_project`.`flight_classes` (`name`) VALUES
 ('First Class');
 
 -- Sample data for `flights`
-INSERT INTO `airline_project`.`flights` (`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`) VALUES
-('DL100', 1, 2, '2024-12-01 08:00:00', 360, 1, 1, "TEST"),
-('UA200', 2, 3, '2024-12-01 10:00:00', 240, 2, 2, "TEST"),
-('AA300', 3, 4, '2024-12-02 12:00:00', 180, 3, 3, "TEST"),
-('SW400', 4, 5, '2024-12-03 14:00:00', 300, 4, 3, "TEST"),
-('JB500', 5, 6, '2024-12-04 16:00:00', 420, 5, 4, "TEST"),
-('AL600', 6, 7, '2024-12-05 18:00:00', 180, 6, 4, "TEST"),
-('SP700', 7, 8, '2024-12-06 20:00:00', 360, 7, 7, "TEST"),
-('FR800', 8, 9, '2024-12-07 22:00:00', 240, 8, 7, "TEST"),
-('HA900', 9, 10, '2024-12-08 06:00:00', 540, 9, 8, "TEST"),
-('AL1000', 10, 1, '2024-12-09 08:00:00', 300, 10, 10, "TEST");
+INSERT INTO `airline_project`.`flights` 
+(`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `price`, `kilometers`, `economy_class_seats_available`, `business_class_seats_available`, `first_class_seats_available`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`) 
+VALUES
+('DL100', 1, 2, '2024-12-01 08:00:00', 360, 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL100'),
+('UA200', 2, 3, '2024-12-01 10:00:00', 240, 149.99, 300, 120, 15, 3, 2, 2, 'TEST_UA200'),
+('AA300', 3, 4, '2024-12-02 12:00:00', 180, 129.99, 200, 100, 10, 2, 3, 3, 'TEST_AA300'),
+('SW400', 4, 5, '2024-12-03 14:00:00', 300, 179.99, 500, 180, 25, 4, 4, 3, 'TEST_SW400'),
+('JB500', 5, 6, '2024-12-04 16:00:00', 420, 209.99, 600, 200, 30, 6, 5, 4, 'TEST_JB500'),
+('AL600', 6, 7, '2024-12-05 18:00:00', 180, 159.99, 250, 140, 18, 3, 6, 4, 'TEST_AL600'),
+('SP700', 7, 8, '2024-12-06 20:00:00', 360, 189.99, 550, 160, 20, 5, 7, 7, 'TEST_SP700'),
+('FR800', 8, 9, '2024-12-07 22:00:00', 240, 169.99, 400, 110, 12, 2, 8, 7, 'TEST_FR800'),
+('HA900', 9, 10, '2024-12-08 06:00:00', 540, 299.99, 800, 220, 35, 7, 9, 8, 'TEST_HA900'),
+('AL1000', 10, 1, '2024-12-09 08:00:00', 300, 179.99, 450, 130, 10, 3, 10, 10, 'TEST_AL1000');
+
 
 -- Sample data for `passengers`
 INSERT INTO `airline_project`.`passengers` (`name`) VALUES
@@ -121,31 +124,18 @@ INSERT INTO `airline_project`.`passengers` (`name`) VALUES
 ('James Taylor'),
 ('Isabella Miller');
 
--- Sample data for `seats`
-INSERT INTO `airline_project`.`seats` (`identifier`, `airplane_id`, `flight_class_id`) VALUES
-('1A', 1, 3),
-('1B', 1, 1),
-('2A', 2, 1),
-('2B', 2, 3),
-('3A', 3, 2),
-('3B', 3, 2),
-('4A', 4, 2),
-('4B', 4, 1),
-('5A', 5, 3),
-('5B', 5, 1);
-
 -- Sample data for `tickets`
-INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`, `seat_id`) VALUES
-(300.00, 'TCK1001', 1, 1, 1, 1),
-(500.00, 'TCK1002', 2, 2, 2, 4),
-(250.00, 'TCK1003', 3, 3, 3, 6),
-(450.00, 'TCK1004', 4, 4, 4, 8),
-(350.00, 'TCK1005', 5, 5, 5, 9),
-(600.00, 'TCK1006', 6, 6, 6, 10),
-(200.00, 'TCK1007', 7, 7, 7, 2),
-(550.00, 'TCK1008', 8, 8, 8, 4),
-(400.00, 'TCK1009', 9, 9, 9, 6),
-(700.00, 'TCK1010', 10, 10, 10, 8);
+INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`) VALUES
+(300.00, 'TCK1001', 1, 1, 1),
+(500.00, 'TCK1002', 2, 2, 2),
+(250.00, 'TCK1003', 3, 3, 3),
+(450.00, 'TCK1004', 4, 4, 4),
+(350.00, 'TCK1005', 5, 5, 5),
+(600.00, 'TCK1006', 6, 6, 6),
+(200.00, 'TCK1007', 7, 7, 7),
+(550.00, 'TCK1008', 8, 8, 8),
+(400.00, 'TCK1009', 9, 9, 9),
+(700.00, 'TCK1010', 10, 10, 10);
 
 -- Sample data for `invoices`
 INSERT INTO `airline_project`.`invoices` (`amount_due`, `due_date`, `date_paid`, `is_paid`, `invoice_booking_id`) VALUES

@@ -124,7 +124,11 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `arrival_port` INT NOT NULL,
   `departure_time` DATETIME NOT NULL,
   `travel_time` INT NOT NULL,
-  `kilometers` VARCHAR(45) NULL DEFAULT NULL,
+  `price` DECIMAL(10, 2) NOT NULL,
+  `kilometers` INT NULL DEFAULT NULL,
+  `economy_class_seats_available` INT NOT NULL,
+  `business_class_seats_available` INT NOT NULL,
+  `first_class_seats_available` INT NOT NULL,
   `flights_airline_id` INT NOT NULL,
   `flights_airplane_id` INT NOT NULL,
   `idempotency_key` varchar(60) NOT NULL,
@@ -177,28 +181,6 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
--- Table `airline_project`.`seats`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `airline_project`.`seats` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `identifier` VARCHAR(45) NOT NULL,
-  `airplane_id` INT NOT NULL,
-  `flight_class_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `airplane_id_idx` (`airplane_id` ASC) VISIBLE,
-  INDEX `flight_class_id_idx` (`flight_class_id` ASC) VISIBLE,
-  CONSTRAINT `airplane_id`
-    FOREIGN KEY (`airplane_id`)
-    REFERENCES `airline_project`.`airplanes` (`id`),
-  CONSTRAINT `flight_class_id`
-    FOREIGN KEY (`flight_class_id`)
-    REFERENCES `airline_project`.`flight_classes` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
-
--- -----------------------------------------------------
 -- Table `airline_project`.`tickets`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
@@ -208,7 +190,6 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
   `passenger_id` INT NOT NULL,
   `flight_id` INT NOT NULL,
   `tickets_booking_id` INT NOT NULL,
-  `seat_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `passenger_id_idx` (`passenger_id` ASC) VISIBLE,
   INDEX `flight_id_idx` (`flight_id` ASC) VISIBLE,

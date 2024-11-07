@@ -12,6 +12,8 @@
 
         public DateTime DepartureDateTime { get; set; }
 
+        public double Price { get; set; }
+
         public string IdempotencyKey { get; set; }
     }
 }

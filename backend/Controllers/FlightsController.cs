@@ -13,6 +13,20 @@ namespace backend.Controllers
         {
             _flightService = flightService;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllFlights()
+        {
+            try
+            {
+                var flights = await _flightService.GetAllFlights();
+                return Ok(flights);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights." });
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddFlight([FromBody] FlightCreationRequest flightCreationRequest)

@@ -17,8 +17,6 @@ public partial class Ticket
 
     public int TicketsBookingId { get; set; }
 
-    public int SeatId { get; set; }
-
     public virtual Flight Flight { get; set; } = null!;
 
     public virtual Passenger Passenger { get; set; } = null!;

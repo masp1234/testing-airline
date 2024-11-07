@@ -11,6 +11,20 @@ namespace backend.Repositories
             _context = context;
         }
 
+        public async Task<List<Flight>> GetAll()
+        {
+            var flights = await _context.Flights
+                // AsNoTracking gives better performance but should only be used in "read-only" scenarios
+                .AsNoTracking()
+                .Include(flight => flight.FlightsAirline)
+                .Include(flight => flight.FlightsAirplane)
+                .Include(flight => flight.DeparturePortNavigation)
+                .Include(flight => flight.ArrivalPortNavigation)
+                .ToListAsync();
+            flights.ForEach((f) => Console.WriteLine(f.ArrivalPortNavigation.Name));
+            return flights;
+        }
+
         public async Task<Flight> Create(Flight newFlight)
         {
             // Check if a flight with the same idempotency key has already been added. If it has, return it instead of creating a new one
