@@ -36,7 +36,7 @@ namespace backend.Services
         {
             User userToCreate = new User { 
                 Email = userCreationRequest.Email,
-                Role = UserRole.Customer
+                Role = UserRole.Customer.ToString()
                                             
             };
 

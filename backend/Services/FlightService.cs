@@ -25,7 +25,7 @@ namespace backend.Services
         {
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
             flight.FlightCode = "123FLIGHTCODE";
-            flight.Kilometers = "123";
+            flight.Kilometers = 123;
             flight.TravelTime = 240;
             Flight createdFlight = await _flightRepository.Create(flight);
             return createdFlight;

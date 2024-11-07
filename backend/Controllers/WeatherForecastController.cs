@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using backend.Database;
 
 namespace backend.Controllers
 {
@@ -12,10 +13,13 @@ namespace backend.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+                private readonly DatabaseContext _context;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, DatabaseContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
@@ -28,6 +32,12 @@ namespace backend.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+        [HttpGet("test-query")]
+        public IActionResult TestQuery()
+        {
+            var result = _context.Users.Select(f => new {  f.Role  }).ToList();
+            return Ok(result);
         }
     }
 }

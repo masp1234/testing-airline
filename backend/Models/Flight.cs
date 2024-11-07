@@ -18,9 +18,9 @@ public partial class Flight
 
     public int TravelTime { get; set; }
 
-    public string? Kilometers { get; set; }
+    public int? Kilometers { get; set; }
 
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 
     public int EconomyClassSeatsAvailable { get; set; }
     public int FirstClassSeatsAvailable { get; set; }

@@ -42,7 +42,7 @@ public partial class DatabaseContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql("server=localhost;database=airline_project;user=root;password=123123", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.0.1-mysql"));
+        => optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.0.1-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
