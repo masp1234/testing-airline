@@ -31,5 +31,12 @@ namespace backend.Services
             return createdFlight;
 
         }
+
+        public async Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
+        {
+            var flights = await _flightRepository.GetFlightsByDepartureDestinationAndDepartureDate(departureAirportId, destinationAirportId, departureDate);
+            var mappedFlights = _mapper.Map<List<FlightResponse>>(flights);
+            return mappedFlights;
+        }
     }
 }
