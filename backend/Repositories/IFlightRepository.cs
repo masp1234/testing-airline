@@ -1,7 +1,10 @@
-﻿namespace backend.Repositories
+﻿using backend.Models;
+
+namespace backend.Repositories
+
 {
     public interface IFlightRepository
     {
-        public Task Create(Flight flight);
+        public Task<Flight> Create(Flight flight);
     }
 }

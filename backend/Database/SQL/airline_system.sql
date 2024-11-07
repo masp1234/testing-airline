@@ -127,6 +127,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `kilometers` VARCHAR(45) NULL DEFAULT NULL,
   `flights_airline_id` INT NOT NULL,
   `flights_airplane_id` INT NOT NULL,
+  `idempotency_key` varchar(60) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `departure_port_idx` (`departure_port` ASC) VISIBLE,
   INDEX `arrival_port_idx` (`arrival_port` ASC) VISIBLE,

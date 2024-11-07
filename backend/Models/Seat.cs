@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend.Models;
 
-namespace backend;
+namespace backend.Models;
 
 public partial class Seat
 {
@@ -12,7 +11,9 @@ public partial class Seat
 
     public int AirplaneId { get; set; }
 
+    public int FlightClassId { get; set; }
+
     public virtual Airplane Airplane { get; set; } = null!;
 
-    public virtual ICollection<FlightSeat> FlightSeats { get; set; } = new List<FlightSeat>();
+    public virtual FlightClass FlightClass { get; set; } = null!;
 }

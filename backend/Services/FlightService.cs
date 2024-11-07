@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using backend.Dtos;
+using backend.Models;
 using backend.Repositories;
 
 namespace backend.Services
@@ -13,11 +14,14 @@ namespace backend.Services
             _mapper = mapper;
             
                 }
-        public async Task CreateFlight(FlightCreationRequest flightCreationRequest)
+        public async Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest)
         {
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
-            Console.WriteLine(flight);
-            await _flightRepository.Create(flight);
+            flight.FlightCode = "123FLIGHTCODE";
+            flight.Kilometers = "123";
+            flight.TravelTime = 240;
+            Flight createdFlight = await _flightRepository.Create(flight);
+            return createdFlight;
 
         }
     }

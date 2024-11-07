@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend.Models;
 
-namespace backend;
+namespace backend.Models;
 
 public partial class Flight
 {
@@ -24,28 +23,15 @@ public partial class Flight
 
     public int FlightsAirplaneId { get; set; }
 
-    public virtual Airplane Airplane { get; set; } = null;
+    public string IdempotencyKey { get; set; }
 
     public virtual Airport ArrivalPortNavigation { get; set; } = null!;
 
     public virtual Airport DeparturePortNavigation { get; set; } = null!;
 
-    public virtual ICollection<FlightSeat> FlightSeats { get; set; } = new List<FlightSeat>();
-
     public virtual Airline FlightsAirline { get; set; } = null!;
 
+    public virtual Airplane FlightsAirplane { get; set; } = null!;
+
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-
-    public override string ToString()
-    {
-        return $"Flight [Id={Id}, FlightCode={FlightCode}, DeparturePort={DeparturePort}, ArrivalPort={ArrivalPort}, " +
-               $"DepartureTime={DepartureTime}, TravelTime={TravelTime}, Kilometers={Kilometers}, FlightsAirlineId={FlightsAirlineId}, " +
-               $"FlightsAirplaneId={FlightsAirplaneId}, Airplane={Airplane?.ToString() ?? "null"}, " +
-               $"ArrivalPortNavigation={ArrivalPortNavigation?.ToString() ?? "null"}, " +
-               $"DeparturePortNavigation={DeparturePortNavigation?.ToString() ?? "null"}, " +
-               $"FlightSeatsCount={FlightSeats.Count}, Airline={FlightsAirline?.ToString() ?? "null"}, TicketsCount={Tickets.Count}]";
-    }
 }
-
-
-

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using backend.Dtos;
+using backend.Models;
 
 namespace backend.Config
 {

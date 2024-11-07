@@ -1,5 +1,6 @@
 using backend.Config;
 using backend.Database;
+using backend.Models;
 using backend.Repositories;
 using backend.Services;
 using dotenv.net;

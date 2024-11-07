@@ -13,5 +13,7 @@ public partial class Airplane
 
     public virtual Airline AirplanesAirline { get; set; } = null!;
 
+    public virtual ICollection<Flight> Flights { get; set; } = new List<Flight>();
+
     public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
 }

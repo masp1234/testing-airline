@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend.Models;
 
-namespace backend;
+namespace backend.Models;
 
 public partial class User
 {
@@ -17,7 +16,8 @@ public partial class User
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }
 
-public enum UserRole {
-    Admin,
-    Customer
+public enum UserRole
+{
+    Customer,
+    Admin
 }

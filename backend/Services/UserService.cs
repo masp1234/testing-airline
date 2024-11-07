@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using backend.Models;
 using backend.Dtos;
 using backend.Repositories;
 using Microsoft.AspNetCore.Identity;
