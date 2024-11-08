@@ -12,6 +12,12 @@ public partial class Airplane
 
     public int AirplanesAirlineId { get; set; }
 
+    public int EconomyClassSeats { get; set; }
+
+    public int BusinessClassSeats { get; set; }
+
+    public int FirstClassSeats { get; set; }
+
     public virtual Airline AirplanesAirline { get; set; } = null!;
 
     [JsonIgnore]

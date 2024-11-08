@@ -12,17 +12,17 @@ INSERT INTO `airline_project`.`airlines` (`name`) VALUES
 ('Allegiant Air');
 
 -- Sample data for `airplanes`
-INSERT INTO `airline_project`.`airplanes` (`name`, `airplanes_airline_id`) VALUES
-('Boeing 737', 1),
-('Airbus A320', 2),
-('Boeing 777', 3),
-('Embraer E175', 4),
-('Airbus A321', 5),
-('Boeing 767', 6),
-('Airbus A319', 7),
-('Boeing 757', 8),
-('Boeing 787', 9),
-('Airbus A380', 10);
+INSERT INTO `airline_project`.`airplanes` (`name`, `airplanes_airline_id`, `economy_class_seats`, `business_class_seats`, `first_class_seats`) VALUES
+('Boeing 737', 1, 140, 40, 5),
+('Airbus A320', 2, 120, 22, 20),
+('Boeing 777', 3, 120, 12, 20),
+('Embraer E175', 4, 4, 2, 1),
+('Airbus A321', 5, 222, 0, 0),
+('Boeing 767', 6, 120, 40, 20),
+('Airbus A319', 7, 120, 40, 20),
+('Boeing 757', 8, 120, 40, 20),
+('Boeing 787', 9, 120, 40, 20),
+('Airbus A380', 10, 120, 40, 20);
 
 -- Sample data for `states`
 INSERT INTO `airline_project`.`states` (`code`) VALUES
@@ -125,17 +125,17 @@ INSERT INTO `airline_project`.`passengers` (`name`) VALUES
 ('Isabella Miller');
 
 -- Sample data for `tickets`
-INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`) VALUES
-(300.00, 'TCK1001', 1, 1, 1),
-(500.00, 'TCK1002', 2, 2, 2),
-(250.00, 'TCK1003', 3, 3, 3),
-(450.00, 'TCK1004', 4, 4, 4),
-(350.00, 'TCK1005', 5, 5, 5),
-(600.00, 'TCK1006', 6, 6, 6),
-(200.00, 'TCK1007', 7, 7, 7),
-(550.00, 'TCK1008', 8, 8, 8),
-(400.00, 'TCK1009', 9, 9, 9),
-(700.00, 'TCK1010', 10, 10, 10);
+INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`, `tickets_class_id`) VALUES
+(300.00, 'TCK1001', 1, 1, 1, 1),
+(500.00, 'TCK1002', 2, 2, 2, 1),
+(250.00, 'TCK1003', 3, 3, 3, 1),
+(450.00, 'TCK1004', 4, 4, 4, 1),
+(350.00, 'TCK1005', 5, 5, 5, 2),
+(600.00, 'TCK1006', 6, 6, 6, 2),
+(200.00, 'TCK1007', 7, 7, 7, 2),
+(550.00, 'TCK1008', 8, 8, 8, 3),
+(400.00, 'TCK1009', 9, 9, 9, 3),
+(700.00, 'TCK1010', 10, 10, 10, 3);
 
 -- Sample data for `invoices`
 INSERT INTO `airline_project`.`invoices` (`amount_due`, `due_date`, `date_paid`, `is_paid`, `invoice_booking_id`) VALUES

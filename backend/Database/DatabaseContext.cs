@@ -75,6 +75,9 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(80)
                 .HasColumnName("name");
+            entity.Property(e => e.EconomyClassSeats).HasColumnName("economy_class_seats");
+            entity.Property(e => e.BusinessClassSeats).HasColumnName("business_class_seats");
+            entity.Property(e => e.FirstClassSeats).HasColumnName("first_class_seats");
 
             entity.HasOne(d => d.AirplanesAirline).WithMany(p => p.Airplanes)
                 .HasForeignKey(d => d.AirplanesAirlineId)
@@ -294,6 +297,11 @@ public partial class DatabaseContext : DbContext
                 .HasForeignKey(d => d.TicketsBookingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("tickets_booking_id");
+
+            entity.HasOne(d => d.FlightClass).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.FlightClassId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tickets_class_id");
         });
 
         modelBuilder.Entity<User>(entity =>

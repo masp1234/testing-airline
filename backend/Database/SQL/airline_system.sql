@@ -16,9 +16,8 @@ USE `airline_project`;
 CREATE TABLE IF NOT EXISTS `airline_project`.`airlines` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`airplanes`
@@ -27,13 +26,15 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`airplanes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(80) NOT NULL,
   `airplanes_airline_id` INT NOT NULL,
+  `economy_class_seats` INT NOT NULL,
+  `business_class_seats` INT NOT NULL,
+  `first_class_seats` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `airline_id_idx` (`airplanes_airline_id` ASC) VISIBLE,
   CONSTRAINT `airplanes_airline_id`
     FOREIGN KEY (`airplanes_airline_id`)
-    REFERENCES `airline_project`.`airlines` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`airlines` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`states`
@@ -41,9 +42,8 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `airline_project`.`states` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(2) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`cities`
@@ -56,9 +56,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`cities` (
   INDEX `state_id_idx` (`state_id` ASC) VISIBLE,
   CONSTRAINT `state_id`
     FOREIGN KEY (`state_id`)
-    REFERENCES `airline_project`.`states` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`states` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`airports`
@@ -72,9 +71,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`airports` (
   INDEX `city_id_idx` (`city_id` ASC) VISIBLE,
   CONSTRAINT `city_id`
     FOREIGN KEY (`city_id`)
-    REFERENCES `airline_project`.`cities` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`cities` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`users`
@@ -85,9 +83,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`users` (
   `password` VARCHAR(100) NOT NULL,
   `role` VARCHAR(8) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`bookings`
@@ -100,9 +97,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`bookings` (
   INDEX `user_id_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `user_id`
     FOREIGN KEY (`user_id`)
-    REFERENCES `airline_project`.`users` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`users` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`flight_classes`
@@ -110,9 +106,8 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `airline_project`.`flight_classes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`flights`
@@ -131,7 +126,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `first_class_seats_available` INT NOT NULL,
   `flights_airline_id` INT NOT NULL,
   `flights_airplane_id` INT NOT NULL,
-  `idempotency_key` varchar(60) NOT NULL,
+  `idempotency_key` VARCHAR(60) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `departure_port_idx` (`departure_port` ASC) VISIBLE,
   INDEX `arrival_port_idx` (`arrival_port` ASC) VISIBLE,
@@ -148,9 +143,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
     REFERENCES `airline_project`.`airlines` (`id`),
   CONSTRAINT `flights_airplane_id`
     FOREIGN KEY (`flights_airplane_id`)
-    REFERENCES `airline_project`.`airplanes` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`airplanes` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`invoices`
@@ -166,9 +160,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`invoices` (
   INDEX `invoice_booking_id_idx` (`invoice_booking_id` ASC) VISIBLE,
   CONSTRAINT `invoice_booking_id`
     FOREIGN KEY (`invoice_booking_id`)
-    REFERENCES `airline_project`.`bookings` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`bookings` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`passengers`
@@ -176,9 +169,8 @@ DEFAULT CHARACTER SET = utf8mb3;
 CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(120) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
 -- Table `airline_project`.`tickets`
@@ -190,10 +182,12 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
   `passenger_id` INT NOT NULL,
   `flight_id` INT NOT NULL,
   `tickets_booking_id` INT NOT NULL,
+  `tickets_class_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `passenger_id_idx` (`passenger_id` ASC) VISIBLE,
   INDEX `flight_id_idx` (`flight_id` ASC) VISIBLE,
   INDEX `tickets_booking_id_idx` (`tickets_booking_id` ASC) VISIBLE,
+  INDEX `tickets_class_id_idx` (`tickets_class_id` ASC) VISIBLE,
   CONSTRAINT `flight_id`
     FOREIGN KEY (`flight_id`)
     REFERENCES `airline_project`.`flights` (`id`),
@@ -202,9 +196,11 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
     REFERENCES `airline_project`.`passengers` (`id`),
   CONSTRAINT `tickets_booking_id`
     FOREIGN KEY (`tickets_booking_id`)
-    REFERENCES `airline_project`.`bookings` (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb3;
+    REFERENCES `airline_project`.`bookings` (`id`),
+  CONSTRAINT `tickets_class_id`
+    FOREIGN KEY (`tickets_class_id`)
+    REFERENCES `airline_project`.`flight_classes` (`id`)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
