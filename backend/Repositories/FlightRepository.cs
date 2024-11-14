@@ -37,5 +37,20 @@ namespace backend.Repositories
             await _context.SaveChangesAsync();
             return newFlight;
         }
+
+        public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
+        {
+            var flights = await _context.Flights
+                .Where(flight =>
+                       flight.DeparturePort == departureAirportId &&
+                       flight.ArrivalPort == destinationAirportId &&
+                       DateOnly.FromDateTime(flight.DepartureTime) == departureDate
+                    )
+                .Include(flight => flight.FlightsAirline)
+                .Include(flight => flight.DeparturePortNavigation)
+                .Include(flight => flight.ArrivalPortNavigation)
+                .ToListAsync();
+            return flights;
+        }
     }
 }

@@ -6,13 +6,10 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("/api/mysql/[controller]")]
-    public class FlightsController : ControllerBase
+    public class FlightsController(IFlightService flightService) : ControllerBase
     {
-        private readonly IFlightService _flightService;
-        public FlightsController(IFlightService flightService)
-        {
-            _flightService = flightService;
-        }
+        private readonly IFlightService _flightService = flightService;
+
         [HttpGet]
         public async Task<IActionResult> GetAllFlights()
         {
@@ -42,6 +39,27 @@ namespace backend.Controllers
                 Console.WriteLine(ex.Message);
                 SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to create a new flight." });
+            }
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> GetFlightsByDepartureDestinationAndDepartureDate([FromQuery] int departureAirportId,
+                                                                                          [FromQuery] int destinationAirportId,
+                                                                                          [FromQuery] DateOnly departureDate)
+        {
+            if (departureAirportId == 0 || destinationAirportId == 0 || departureDate == DateOnly.MinValue)
+            {
+                return BadRequest(new { message = "The request is missing either departureAirportId, destinationAirportId, departureDate or all of these parameters." });
+            }
+            try
+            {
+                var flights = await _flightService.GetFlightsByDepartureDestinationAndDepartureDate(departureAirportId, destinationAirportId, departureDate);
+                return Ok(new { flights });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights by departure, destination and departure date." });
             }
         }
     }

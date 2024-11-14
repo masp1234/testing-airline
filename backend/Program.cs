@@ -88,11 +88,13 @@ namespace backend
             // Register / add repositories to the container
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+            builder.Services.AddScoped<IAirportRepository, AirportRepository>();
 
             // Add services to the container.
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IFlightService, FlightService>();
+            builder.Services.AddScoped<IAirportService, AirportService>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
             builder.Services.AddControllers()
