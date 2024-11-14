@@ -46,6 +46,9 @@ namespace backend.Repositories
                        flight.ArrivalPort == destinationAirportId &&
                        DateOnly.FromDateTime(flight.DepartureTime) == departureDate
                     )
+                .Include(flight => flight.FlightsAirline)
+                .Include(flight => flight.DeparturePortNavigation)
+                .Include(flight => flight.ArrivalPortNavigation)
                 .ToListAsync();
             return flights;
         }
