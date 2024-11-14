@@ -1,4 +1,3 @@
-using System.Text;
 using backend.Config;
 using backend.Database;
 using backend.Models;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Sentry.Extensibility;
 
 namespace backend
 {
@@ -20,6 +21,30 @@ namespace backend
             DotEnv.Load();
 
             var builder = WebApplication.CreateBuilder(args);
+
+            // Initializing and configuring Sentry
+            builder.WebHost.UseSentry(options =>
+            {
+                options.TracesSampleRate = 0.5;
+                options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
+                options.MaxRequestBodySize = RequestSize.Medium;
+                options.MinimumBreadcrumbLevel = LogLevel.Debug;
+                options.AttachStacktrace = true;
+                options.Debug = true;
+                options.DiagnosticLevel = SentryLevel.Error;
+                options.CaptureFailedRequests = true;
+                options.SendDefaultPii = false;
+
+                options.SetBeforeSend((sentryEvent, hint) =>
+                {
+                    if (sentryEvent != null)
+                    {
+                        sentryEvent.ServerName = null;
+                        sentryEvent.User.IpAddress = null;
+                    }
+                    return sentryEvent;
+                });
+            });
 
             builder.Services.AddCors(options =>
             {

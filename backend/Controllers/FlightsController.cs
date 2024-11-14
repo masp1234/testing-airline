@@ -24,6 +24,7 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights." });
             }
         }
@@ -39,6 +40,7 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to create a new flight." });
             }
         }

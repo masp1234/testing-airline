@@ -51,6 +51,7 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create a new user." });
 
             }
