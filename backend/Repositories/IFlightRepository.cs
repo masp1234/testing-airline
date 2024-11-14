@@ -5,9 +5,8 @@ namespace backend.Repositories
 {
     public interface IFlightRepository
     {
-        public Task<List<Flight>> GetAll();
-        public Task<Flight> Create(Flight flight);
-
-
+        Task<List<Flight>> GetAll();
+        Task<Flight> Create(Flight flight);
+        Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate);
     }
 }

@@ -17,6 +17,10 @@ namespace backend.Dtos
 
         public double Price { get; set; }
 
+        public int EconomyClassSeatsAvailable { get; set; }
+        public int FirstClassSeatsAvailable { get; set; }
+        public int BusinessClassSeatsAvailable { get; set; }
+
         public virtual Airport ArrivalPortNavigation { get; set; } = null!;
 
         public virtual Airport DeparturePortNavigation { get; set; } = null!;
