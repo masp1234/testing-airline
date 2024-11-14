@@ -83,7 +83,9 @@ namespace backend
             });
             builder.Services.AddControllersWithViews();
 
-            
+            // Add HTTP client for Google Distance API
+            builder.Services.AddHttpClient<DistanceApiService>();
+
 
             // Register / add repositories to the container
             builder.Services.AddScoped<IUserRepository, UserRepository>();

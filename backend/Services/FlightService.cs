@@ -9,9 +9,15 @@ namespace backend.Services
     {
         private readonly IFlightRepository _flightRepository;
         private readonly IMapper _mapper;
-        public FlightService(IFlightRepository flightRepository, IMapper mapper) {
+        private readonly DistanceApiService _distanceApiService;
+        public FlightService(
+            IFlightRepository flightRepository,
+            IMapper mapper,
+            DistanceApiService distanceApiService
+            ) {
             _flightRepository = flightRepository;
             _mapper = mapper;
+            _distanceApiService = distanceApiService;
             
                 }
 
@@ -25,6 +31,8 @@ namespace backend.Services
         {
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
             flight.FlightCode = "123FLIGHTCODE";
+            var response = await _distanceApiService.GetDistanceData("LAX", "NY");
+            Console.WriteLine(response);
             flight.Kilometers = 123;
             flight.TravelTime = 240;
             Flight createdFlight = await _flightRepository.Create(flight);
