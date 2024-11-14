@@ -6,13 +6,10 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("/api/mysql/[controller]")]
-    public class FlightsController : ControllerBase
+    public class FlightsController(IFlightService flightService) : ControllerBase
     {
-        private readonly IFlightService _flightService;
-        public FlightsController(IFlightService flightService)
-        {
-            _flightService = flightService;
-        }
+        private readonly IFlightService _flightService = flightService;
+
         [HttpGet]
         public async Task<IActionResult> GetAllFlights()
         {
