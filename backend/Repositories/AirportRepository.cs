@@ -15,5 +15,14 @@ namespace backend.Repositories
                     .ToListAsync();
             return airports;
         }
+
+        public async Task<List<Airport>> FindByIds(params int[] ids)
+        {
+            var airports = await _context.Airports
+                .Where((airport) => ids.Contains(airport.Id))
+                .ToListAsync();
+
+            return airports;
+        }
     }
 }

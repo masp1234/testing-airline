@@ -24,7 +24,7 @@ namespace backend.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get users." });
 
             }
@@ -50,7 +50,7 @@ namespace backend.Controllers
 
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
                 SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create a new user." });
 
