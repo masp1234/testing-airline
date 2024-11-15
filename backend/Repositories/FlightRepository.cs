@@ -21,7 +21,6 @@ namespace backend.Repositories
                 .Include(flight => flight.DeparturePortNavigation)
                 .Include(flight => flight.ArrivalPortNavigation)
                 .ToListAsync();
-            flights.ForEach((f) => Console.WriteLine(f.ArrivalPortNavigation.Name));
             return flights;
         }
 
