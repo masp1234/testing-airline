@@ -86,19 +86,22 @@ namespace backend
       // Add HTTP client for Google Distance API
       builder.Services.AddHttpClient<IDistanceApiService, DistanceApiService>();
 
-			// Register / add repositories to the container
-			builder.Services.AddScoped<IUserRepository, UserRepository>();
-			builder.Services.AddScoped<IFlightRepository, FlightRepository>();
-			builder.Services.AddScoped<IAirportRepository, AirportRepository>();
-			builder.Services.AddScoped<IAirlineRepository, AirlineRepository>();
 
-			// Add services to the container.
-			builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-			builder.Services.AddScoped<IUserService, UserService>();
-			builder.Services.AddScoped<IFlightService, FlightService>();
-			builder.Services.AddScoped<IAirportService, AirportService>();
-			builder.Services.AddScoped<IAirlineService, AirlineService>();
-			builder.Services.AddAutoMapper(typeof(MappingProfile));
+            // Register / add repositories to the container
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+            builder.Services.AddScoped<IAirportRepository, AirportRepository>();
+            builder.Services.AddScoped<IAirplaneRepository, AirplaneRepository>();
+            builder.Services.AddScoped<IAirlineRepository, AirlineRepository>();
+
+            // Add services to the container.
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IFlightService, FlightService>();
+            builder.Services.AddScoped<IAirportService, AirportService>();
+            builder.Services.AddScoped<IAirplaneService, AirplaneService>();
+            builder.Services.AddScoped<IAirlineService, AirlineService>();
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 			builder.Services.AddControllers()
 				.AddJsonOptions(options =>

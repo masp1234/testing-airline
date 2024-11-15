@@ -21,9 +21,11 @@ namespace backend.Config
 
 			CreateMap<User, JwtRequest>();
 
-			CreateMap<Airport, AirportResponse>();
-			
-			CreateMap<Airline, AirlineResponse>();
-		}
-	}
+            CreateMap<Airport, AirportResponse>();
+
+            CreateMap<Airplane, AirplaneResponse>();
+            
+            CreateMap<Airline, AirlineResponse>();
+        }
+    }
 }
