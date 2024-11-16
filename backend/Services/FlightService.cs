@@ -36,6 +36,7 @@ namespace backend.Services
             (int distance, int duration) = await GetDistanceAndTravelTime(originAirport.Name, arrivalAirport.Name);
             flight.Kilometers = distance;
             flight.TravelTime = (int)duration;
+            flight.Price = CalculateFlightPrice(distance);
             Flight createdFlight = await _flightRepository.Create(flight);
             return createdFlight;
 
@@ -59,6 +60,13 @@ namespace backend.Services
             int averageFlightSpeedInKilometersPerHour = 800;
             double? durationInMinutes = (kilometers / averageFlightSpeedInKilometersPerHour) * 60;
             return ((int)kilometers, (int)durationInMinutes);
+        }
+
+        private decimal CalculateFlightPrice(int kilometers)
+        {
+            decimal pricePerKilometer = 0.07m;
+            return pricePerKilometer * kilometers;
+
         }
     }
 }
