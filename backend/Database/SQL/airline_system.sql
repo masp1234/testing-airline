@@ -202,6 +202,21 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
     REFERENCES `airline_project`.`flight_classes` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
+-- -----------------------------------------------------
+-- Application User Role Creation
+-- -----------------------------------------------------
+CREATE ROLE app_user;
+
+GRANT SELECT, CREATE ON TABLE users TO app_user;
+
+GRANT SELECT ON TABLE airplanes TO app_user;
+
+GRANT SELECT ON TABLE airports TO app_user;
+
+GRANT SELECT ON TABLE airlines TO app_user;
+
+GRANT SELECT, CREATE ON TABLE flights TO app_user;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
