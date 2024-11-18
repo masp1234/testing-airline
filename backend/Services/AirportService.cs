@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using backend.Dtos;
+using backend.Models;
 using backend.Repositories;
 
 namespace backend.Services

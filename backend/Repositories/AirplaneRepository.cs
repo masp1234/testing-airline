@@ -12,5 +12,11 @@ namespace backend.Repositories
             var airplanes = await _context.Airplanes.ToListAsync();
             return airplanes;
         }
+
+        public async Task<Airplane?> GetAirplaneById(int id)
+        {
+            var airplane = await _context.Airplanes.FindAsync(id);
+            return airplane;
+        }
     }
 }

@@ -31,6 +31,12 @@ namespace backend.Controllers
         {
             try
             {
+                var airplane = await _airplaneService.GetAirplaneById(id);
+                if (airplane == null)
+                {
+                    return NotFound(new { message = $"There was no airplane with ID: '{id}' found." });
+                }
+
                 var timeSlots = await _airplaneService.GetBookedTimeslotsByAirplaneId(id);
                 return Ok(new { airplaneId = id, bookedTimeSlots = timeSlots });
             }
