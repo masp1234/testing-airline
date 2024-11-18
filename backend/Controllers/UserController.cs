@@ -2,6 +2,8 @@
 using backend.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -77,9 +79,8 @@ namespace backend.Controllers
 					Response.Cookies.Append("AuthToken", token, new CookieOptions
 					{
 						HttpOnly = true,
-						Secure = true,
+						Secure = false,
 						SameSite = SameSiteMode.Strict,
-						Expires = DateTime.UtcNow.AddHours(1)
 					});
 
 					return Ok(new { message = "Login successful: " });
@@ -88,6 +89,21 @@ namespace backend.Controllers
 
 			return Unauthorized();
 		}
+		
+		[Authorize]
+		[HttpGet("currentRole")]
+		public IActionResult GetCurrentUserRole()
+		{
+			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
+			Console.WriteLine(roleClaim);
+
+			if (roleClaim == null)
+			{
+				return Unauthorized(new { message = "User role not found." });
+			}
+
+		return Ok(new { role = roleClaim });
+}
 	}
 }
 
