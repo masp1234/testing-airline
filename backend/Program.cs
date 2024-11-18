@@ -51,7 +51,7 @@ namespace backend
 				options.AddDefaultPolicy(
 					policy =>
 					{
-						policy.WithOrigins("http://localhost:5173")
+						policy.WithOrigins(Environment.GetEnvironmentVariable("CLIENT_URL") ?? "http://localhost:5173")
 							  .AllowCredentials()
 							  .AllowAnyHeader();
 					});
