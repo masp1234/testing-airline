@@ -51,5 +51,14 @@ namespace backend.Repositories
                 .ToListAsync();
             return flights;
         }
+
+        public async Task<List<Flight>> GetFlightsByAirplaneId(int airplaneId)
+        {
+            var flights = await _context.Flights
+                .Where(flight => flight.FlightsAirplaneId == airplaneId)
+                .ToListAsync();
+
+            return flights;
+        }
     }
 }

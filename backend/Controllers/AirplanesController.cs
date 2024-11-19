@@ -1,4 +1,5 @@
 ﻿using backend.Services;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -23,6 +24,27 @@ namespace backend.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get airplanes." });
             }
 
+        }
+
+        [HttpGet("{id}/bookedTimeSlots")]
+        public async Task<IActionResult> GetBookedTimeslotsByAirplaneId(int id)
+        {
+            try
+            {
+                var airplane = await _airplaneService.GetAirplaneById(id);
+                if (airplane == null)
+                {
+                    return NotFound(new { message = $"There was no airplane with ID: '{id}' found." });
+                }
+
+                var timeSlots = await _airplaneService.GetBookedTimeslotsByAirplaneId(id);
+                return Ok(new { airplaneId = id, bookedTimeSlots = timeSlots });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to find booked time slots." });
+            }
         }
     }
 }
