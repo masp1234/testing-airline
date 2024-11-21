@@ -47,6 +47,7 @@ namespace backend.Controllers
 				}
 
 				await _userService.CreateUser(userCreationRequest);
+				
 				return StatusCode(StatusCodes.Status201Created, new { message = "User created successfully!" });
 			}
 
@@ -64,7 +65,7 @@ namespace backend.Controllers
 		{
 			var user = await _userService.CheckUserByEmail(request.Email);
 
-			if (user == null) return NotFound(new {message = "User not exist!"});
+			if (user == null) return NotFound(new {message = "User does not exist!"});
 
 			if (user != null)
 			{
@@ -79,11 +80,11 @@ namespace backend.Controllers
 					Response.Cookies.Append("AuthToken", token, new CookieOptions
 					{
 						HttpOnly = true,
-						Secure = false,
+						Secure = false, // Ensure this is set to false when using localhost
 						SameSite = SameSiteMode.Strict,
 					});
-
-					return Ok(new { message = "Login successful: " });
+					// Return response message and user role from token
+					return Ok(new { message = "Login successful.", role = user.Role });
 				}
 			}
 
@@ -91,19 +92,20 @@ namespace backend.Controllers
 		}
 		
 		[Authorize]
-		[HttpGet("currentRole")]
-		public IActionResult GetCurrentUserRole()
+		[HttpPost("logout")]
+		public IActionResult Logout()
 		{
-			var roleClaim = User.FindFirst(ClaimTypes.Role)?.Value;
-			Console.WriteLine(roleClaim);
-
-			if (roleClaim == null)
+		Response.Cookies.Append("AuthToken", "", new CookieOptions
 			{
-				return Unauthorized(new { message = "User role not found." });
-			}
+				Expires = DateTime.Now.AddDays(-1), // Set to a past date to expire the cookie
+				HttpOnly = true,
+				Secure = false, // Ensure this is set to false when using localhost
+				SameSite = SameSiteMode.Strict
+			});
 
-		return Ok(new { role = roleClaim });
-}
+			return Ok(new { message = "Logout successful." });
+		}
+		
 	}
 }
 
