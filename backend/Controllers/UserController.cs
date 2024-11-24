@@ -80,7 +80,7 @@ namespace backend.Controllers
 					Response.Cookies.Append("AuthToken", token, new CookieOptions
 					{
 						HttpOnly = true,
-						Secure = false, // Ensure this is set to false when using localhost
+						Secure = true, // Ensure this is set to false when using localhost
 						SameSite = SameSiteMode.Strict,
 					});
 					// Return response message and user role from token

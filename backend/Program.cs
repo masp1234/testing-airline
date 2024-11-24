@@ -149,7 +149,7 @@ namespace backend
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				HttpOnly = HttpOnlyPolicy.Always,
-				Secure = CookieSecurePolicy.Always
+				Secure = CookieSecurePolicy.Always // Ensure this is set to None when using localhost
 			});
 			
 			app.UseAuthentication();
