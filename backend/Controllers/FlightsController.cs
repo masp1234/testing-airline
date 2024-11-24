@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
+	[Authorize (Roles = "Admin")]
 	[ApiController]
 	[Route("/api/mysql/[controller]")]
 	public class FlightsController(IFlightService flightService) : ControllerBase
@@ -27,7 +28,6 @@ namespace backend.Controllers
 			}
 		}
 
-		[Authorize (Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> AddFlight([FromBody] FlightCreationRequest flightCreationRequest)
 		{
@@ -40,7 +40,7 @@ namespace backend.Controllers
 			{
 				Console.WriteLine(ex);
 				SentrySdk.CaptureException(ex);
-				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to create a new flight." });
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create a new flight." });
 			}
 		}
 
