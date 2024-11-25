@@ -168,7 +168,9 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`invoices` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(120) NOT NULL,
+  `first_name` VARCHAR(80) NOT NULL,
+  `last_name` VARCHAR(120) NOT NULL,
+  `email` VARCHAR(320) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 

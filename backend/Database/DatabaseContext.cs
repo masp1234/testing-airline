@@ -245,9 +245,15 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("passengers");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Name)
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(80)
+                .HasColumnName("first_name");
+            entity.Property(e => e.LastName)
                 .HasMaxLength(120)
-                .HasColumnName("name");
+                .HasColumnName("last_name");
+            entity.Property(e => e.Email)
+                .HasMaxLength(320)
+                .HasColumnName("email");
         });
 
         modelBuilder.Entity<State>(entity =>

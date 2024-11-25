@@ -112,17 +112,16 @@ VALUES
 
 
 -- Sample data for `passengers`
-INSERT INTO `airline_project`.`passengers` (`name`) VALUES
-('John Doe'),
-('Jane Smith'),
-('Michael Jones'),
-('Emily Johnson'),
-('William Brown'),
-('Olivia Davis'),
-('Liam Wilson'),
-('Sophia Moore'),
-('James Taylor'),
-('Isabella Miller');
+INSERT INTO `airline_project`.`passengers` (`first_name`, `last_name`, `email`) VALUES
+('Jane', 'Smith', 'jane.smith@example.com'),
+('Michael', 'Jones', 'michael.jones@example.com'),
+('Emily', 'Johnson', 'emily.johnson@example.com'),
+('William', 'Brown', 'william.brown@example.com'),
+('Olivia', 'Davis', 'olivia.davis@example.com'),
+('Liam', 'Wilson', 'liam.wilson@example.com'),
+('Sophia', 'Moore', 'sophia.moore@example.com'),
+('James', 'Taylor', 'james.taylor@example.com'),
+('Isabella', 'Miller', 'isabella.miller@example.com');
 
 -- Sample data for `tickets`
 INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id`, `flight_id`, `tickets_booking_id`, `tickets_class_id`) VALUES
