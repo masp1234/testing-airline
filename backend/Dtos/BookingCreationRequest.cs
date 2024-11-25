@@ -6,9 +6,9 @@ namespace backend.Dtos
 {
     public class BookingCreationRequest
     {
-        public int UserId { get; set; }
+        public string Email { get; set; }
 
-        public TicketCreationRequest[] Tickets { get; set; }
+        public List<TicketCreationRequest> Tickets { get; set; }
 
     }
 

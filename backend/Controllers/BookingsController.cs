@@ -1,4 +1,5 @@
 ﻿using backend.Dtos;
+using backend.Services;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,14 +7,30 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("/api/mysql/[controller]")]
-    public class BookingsController: ControllerBase
+    public class BookingsController(IBookingService bookingService): ControllerBase
     {
+        private readonly IBookingService _bookingService = bookingService;
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreationRequest bookingCreationRequest)
         {
-            Console.WriteLine(bookingCreationRequest.Tickets[0].Passenger.Email);
+            var result = await _bookingService.CreateBooking(bookingCreationRequest);
 
-            return Ok(bookingCreationRequest);
+            try
+            {
+                if (result.IsSucces)
+                {
+                    return Ok(result.Data);
+                }
+                else
+                {
+                    return NotFound(new { message = result.Message });
+                }
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to create a booking." });
+            }
         }
 
     }
