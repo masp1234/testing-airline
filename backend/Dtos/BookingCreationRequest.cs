@@ -19,15 +19,5 @@ namespace backend.Dtos
         public int FlightId { get; set; }
 
         public int FlightClassId { get; set; }
-
-    }
-
-    public class PassengerCreationRequest
-    {
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public string Email { get; set; }
     }
 }

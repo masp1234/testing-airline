@@ -93,6 +93,7 @@ namespace backend
             builder.Services.AddScoped<IAirportRepository, AirportRepository>();
             builder.Services.AddScoped<IAirplaneRepository, AirplaneRepository>();
             builder.Services.AddScoped<IAirlineRepository, AirlineRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
             // Add services to the container.
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

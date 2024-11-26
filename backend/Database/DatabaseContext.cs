@@ -284,6 +284,7 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.FlightId).HasColumnName("flight_id");
             entity.Property(e => e.PassengerId).HasColumnName("passenger_id");
             entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.FlightClassId).HasColumnName("tickets_class_id");
             entity.Property(e => e.TicketNumber)
                 .HasMaxLength(45)
                 .HasColumnName("ticket_number");

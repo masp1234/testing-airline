@@ -29,6 +29,12 @@ namespace backend.Services
             return mappedUsers;
         }
 
+        public async Task<User?> GetUserById(int id)
+        {
+            User? user = await _userRepository.GetUserById(id);
+            return user;
+        }
+
         public async Task<UserResponse?> GetUserByEmail(string email)
         {
             User? user = await _userRepository.GetByEmail(email);
