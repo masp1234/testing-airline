@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `price` DOUBLE NOT NULL,
+  `price` DECIMAL(5, 2) NOT NULL,
   `ticket_number` VARCHAR(45) NOT NULL,
   `passenger_id` INT NOT NULL,
   `flight_id` INT NOT NULL,

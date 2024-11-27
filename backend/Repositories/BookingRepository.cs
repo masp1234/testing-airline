@@ -36,8 +36,7 @@ namespace backend.Repositories
                         FlightClassId = ticket.FlightClassId,
                         FlightId = ticket.FlightId,
                         Passenger = passenger.Entity,
-                        // Make Ticket.Price a decimal instead
-                        Price = (double)ticket.FlightPrice,
+                        Price = ticket.FlightPrice,
                         TicketNumber = ticket.TicketNumber,
                         TicketsBookingId = createdBooking.Entity.Id
                     });
