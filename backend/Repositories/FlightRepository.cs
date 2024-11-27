@@ -24,6 +24,12 @@ namespace backend.Repositories
             return flights;
         }
 
+        public async Task<Flight?> GetFlightById(int id)
+        {
+            var flight = await _context.Flights.FindAsync(id);
+            return flight;
+        }
+
         public async Task<Flight> Create(Flight newFlight)
         {
             // Check if a flight with the same idempotency key has already been added. If it has, return it instead of creating a new one
@@ -59,6 +65,12 @@ namespace backend.Repositories
                 .ToListAsync();
 
             return flights;
+        }
+
+        public async Task<FlightClass?> GetFlightClassById(int id)
+        {
+            var flightClass = await _context.FlightClasses.FindAsync(id);
+            return flightClass;
         }
     }
 }

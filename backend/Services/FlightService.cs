@@ -23,6 +23,12 @@ namespace backend.Services
             var mappedFlights = _mapper.Map<List<FlightResponse>>(flights);
             return mappedFlights;
         }
+
+        public async Task<Flight?> GetFlightById(int id)
+        {
+            var flight = await _flightRepository.GetFlightById(id);
+            return flight;
+        }
         public async Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest)
         {
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
@@ -67,6 +73,12 @@ namespace backend.Services
             decimal pricePerKilometer = 0.07m;
             return pricePerKilometer * kilometers;
 
+        }
+
+        public async Task<FlightClass?> GetFlightClassById(int id)
+        {
+            var flightClass = await _flightRepository.GetFlightClassById(id);
+            return flightClass;
         }
     }
 }

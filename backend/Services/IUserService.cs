@@ -1,10 +1,13 @@
 ﻿using backend.Dtos;
+using backend.Models;
 
 namespace backend.Services
 {
     public interface IUserService
     {
         Task<List<UserResponse>> GetUsers();
+
+        Task<User?> GetUserById(int id);
 
         Task<UserResponse?> GetUserByEmail(string email);
         Task<JwtRequest?> CheckUserByEmail(string email);

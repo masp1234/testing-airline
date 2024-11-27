@@ -26,6 +26,12 @@ namespace backend.Config
             CreateMap<Airplane, AirplaneResponse>();
             
             CreateMap<Airline, AirlineResponse>();
+
+            CreateMap<BookingCreationRequest, BookingProcessedRequest>();
+
+            CreateMap<TicketCreationRequest, TicketProcessedRequest>();
+
+            
         }
     }
 }

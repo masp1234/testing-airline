@@ -44,4 +44,34 @@ public partial class Flight
     public virtual Airplane FlightsAirplane { get; set; } = null!;
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+
+    public void DecrementSeatAvailability(string flightClass)
+    {
+        switch (flightClass)
+        {
+            case "Economy":
+                if (EconomyClassSeatsAvailable > 0)
+                    EconomyClassSeatsAvailable--;
+                else
+                    throw new InvalidOperationException("No Economy class seats available.");
+                break;
+
+            case "Business":
+                if (BusinessClassSeatsAvailable > 0)
+                    BusinessClassSeatsAvailable--;
+                else
+                    throw new InvalidOperationException("No Business class seats available.");
+                break;
+
+            case "First Class":
+                if (FirstClassSeatsAvailable > 0)
+                    FirstClassSeatsAvailable--;
+                else
+                    throw new InvalidOperationException("No First Class seats available.");
+                break;
+
+            default:
+                throw new ArgumentException($"Invalid flight class: {flightClass}");
+        }
+    }
 }

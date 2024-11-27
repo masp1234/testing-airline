@@ -21,6 +21,12 @@ namespace backend.Repositories
             return users;
         }
 
+        public async Task<User?> GetUserById(int id)
+        {
+            User? user = await _context.Users.FindAsync(id);
+            return user;
+        }
+
         public async Task<User?> GetByEmail(string email)
         {
             User? user = await _context.Users.SingleOrDefaultAsync(user => user.Email == email);
