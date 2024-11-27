@@ -21,30 +21,30 @@ namespace backend
 			DotEnv.Load();
 
 			var builder = WebApplication.CreateBuilder(args);
-      
-      // Initializing and configuring Sentry
-      builder.WebHost.UseSentry(options =>
-            {
-                options.TracesSampleRate = 0.5;
-                options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
-                options.MaxRequestBodySize = RequestSize.Medium;
-                options.MinimumBreadcrumbLevel = LogLevel.Debug;
-                options.AttachStacktrace = true;
-                options.Debug = true;
-                options.DiagnosticLevel = SentryLevel.Error;
-                options.CaptureFailedRequests = true;
-                options.SendDefaultPii = false;
+	  
+	  // Initializing and configuring Sentry
+	  builder.WebHost.UseSentry(options =>
+			{
+				options.TracesSampleRate = 0.5;
+				options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
+				options.MaxRequestBodySize = RequestSize.Medium;
+				options.MinimumBreadcrumbLevel = LogLevel.Debug;
+				options.AttachStacktrace = true;
+				options.Debug = true;
+				options.DiagnosticLevel = SentryLevel.Error;
+				options.CaptureFailedRequests = true;
+				options.SendDefaultPii = false;
 
-                options.SetBeforeSend((sentryEvent, hint) =>
-                {
-                    if (sentryEvent != null)
-                    {
-                        sentryEvent.ServerName = null;
-                        sentryEvent.User.IpAddress = null;
-                    }
-                    return sentryEvent;
-                });
-            });
+				options.SetBeforeSend((sentryEvent, hint) =>
+				{
+					if (sentryEvent != null)
+					{
+						sentryEvent.ServerName = null;
+						sentryEvent.User.IpAddress = null;
+					}
+					return sentryEvent;
+				});
+			});
 
 			builder.Services.AddCors(options =>
 			{
@@ -80,11 +80,32 @@ namespace backend
 					ValidAudience = Environment.GetEnvironmentVariable("Audience"),
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey")))
 				};
+
+				options.Events = new JwtBearerEvents
+				{
+					OnMessageReceived = context =>
+					{
+						// Checks for the JWT in the cookie
+						var token = context.HttpContext.Request.Cookies["AuthToken"];
+						if (!string.IsNullOrEmpty(token))
+						{
+							context.Token = token;
+						}
+						return Task.CompletedTask;
+					}
+				};
 			});
+			
+			builder.Services.AddAuthorization(options =>
+			{
+				options.AddPolicy("RequireAuthenticatedUser", policy =>
+					policy.RequireAuthenticatedUser());
+			});
+			
 			builder.Services.AddControllersWithViews();
-      
-      // Add HTTP client for Google Distance API
-      builder.Services.AddHttpClient<IDistanceApiService, DistanceApiService>();
+	  
+	  // Add HTTP client for Google Distance API
+	  builder.Services.AddHttpClient<IDistanceApiService, DistanceApiService>();
 
 
             // Register / add repositories to the container
@@ -105,6 +126,7 @@ namespace backend
             builder.Services.AddScoped<IBookingService, BookingService>();
 			builder.Services.AddScoped<ITicketAvailabilityChecker, TicketAvailabilityChecker>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 
 			builder.Services.AddControllers()
 				.AddJsonOptions(options =>
@@ -131,10 +153,11 @@ namespace backend
 			app.UseCookiePolicy(new CookiePolicyOptions
 			{
 				HttpOnly = HttpOnlyPolicy.Always,
-				Secure = CookieSecurePolicy.Always
+				Secure = CookieSecurePolicy.Always // Ensure this is set to None when using localhost
 			});
-			app.UseAuthorization();
+			
 			app.UseAuthentication();
+			app.UseAuthorization();
 			app.MapControllers();
 
 			app.Run();
