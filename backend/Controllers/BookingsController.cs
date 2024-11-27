@@ -12,10 +12,9 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreationRequest bookingCreationRequest)
         {
-            var result = await _bookingService.CreateBooking(bookingCreationRequest);
-
             try
             {
+                var result = await _bookingService.CreateBooking(bookingCreationRequest);
                 if (result.IsSucces)
                 {
                     return Ok(result.Data);
