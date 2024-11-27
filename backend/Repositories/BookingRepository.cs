@@ -30,6 +30,7 @@ namespace backend.Repositories
                         LastName = ticket.Passenger.LastName,
                         Email = ticket.Passenger.Email,
                     });
+
                     var createdTicket = await _context.Tickets.AddAsync(new Ticket()
                     {
                         FlightClassId = ticket.FlightClassId,
@@ -50,10 +51,8 @@ namespace backend.Repositories
 
                 return createdBooking.Entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log to Sentry
-                Console.WriteLine(ex);
                 await transaction.RollbackAsync();
                 throw;
 

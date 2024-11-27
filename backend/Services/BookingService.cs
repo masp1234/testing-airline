@@ -2,16 +2,22 @@
 using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace backend.Services
 {
-    public class BookingService(IUserService userService, IFlightService flightService, IBookingRepository bookingRepository, IMapper mapper) : IBookingService
+    public class BookingService(
+        IUserService userService,
+        IFlightService flightService,
+        IBookingRepository bookingRepository,
+        IMapper mapper,
+        ITicketAvailabilityChecker ticketAvailabilityChecker
+        ) : IBookingService
     {
         private readonly IUserService _userService = userService;
         private readonly IFlightService _flightService = flightService;
         private readonly IBookingRepository _bookingRepository = bookingRepository;
         private readonly IMapper _mapper = mapper;
+        private readonly ITicketAvailabilityChecker _ticketAvailabilityChecker = ticketAvailabilityChecker;
 
         public async Task<ServiceResult<Booking>> CreateBooking(BookingCreationRequest bookingCreationRequest)
         {
@@ -42,26 +48,17 @@ namespace backend.Services
                     return ServiceResult<Booking>.Failure($"No flight class found with the id: {ticket.FlightClassId}.");
                 }
 
-                
                 ticket.FlightClassName = flightClass.Name;
                 ticket.TicketNumber = GenerateUniqueString();
                 ticket.FlightPrice = CalculateTicketPrice(flight, flightClass);
-                var flightIdAndClassName = (ticket.FlightId, flightClass.Name);
-                if (ticketClassesPerFlight.ContainsKey(flightIdAndClassName))
-                {
-                    ticketClassesPerFlight[flightIdAndClassName] += 1;
-                }
-                else
-                {
-                    ticketClassesPerFlight[flightIdAndClassName] = 1;
-                }
-                uniqueFlights.Add(flight);
 
                 
+                _ticketAvailabilityChecker.AddAmountOfTicketsForFlightIdAndFlightClass(ticket.FlightId, ticket.FlightClassName);
+                _ticketAvailabilityChecker.AddFlight(flight);
             }
 
-            bool ticketIsAvailable = CheckTicketAvailability(uniqueFlights, ticketClassesPerFlight);
-            if (!ticketIsAvailable)
+            bool ticketsAreAvailable = _ticketAvailabilityChecker.CheckTicketAvailability();
+            if (!ticketsAreAvailable)
             {
                 return ServiceResult<Booking>.Failure($"Some of the tickets requested are unavailable.");
             }
@@ -105,35 +102,5 @@ namespace backend.Services
             string bookingConfirmationNumber = datePart + "-" + stringPart;
             return bookingConfirmationNumber;
         }
-
-        private bool CheckTicketAvailability(HashSet<Flight> flights, Dictionary<(int flightId, string flightClass), int> ticketClassesPerFlight)
-        {
-            foreach (Flight flight in flights)
-            {
-                foreach (var key in ticketClassesPerFlight.Keys)
-                {
-                    if (key.flightId == flight.Id)
-                    {
-                        string flightClass = key.flightClass;
-                        int amountOfTickets = ticketClassesPerFlight[key];
-
-                        bool ticketIsAvailable = flightClass switch
-                        {
-                            "Economy" => flight.EconomyClassSeatsAvailable - amountOfTickets >= 0,
-                            "Business" => flight.BusinessClassSeatsAvailable - amountOfTickets >= 0,
-                            "First Class" => flight.FirstClassSeatsAvailable - amountOfTickets >= 0,
-                            _ => throw new ArgumentException($"'{flightClass}' is not a valid flight class")
-                        };
-
-                        if (!ticketIsAvailable)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
     }
 }

@@ -103,6 +103,7 @@ namespace backend
             builder.Services.AddScoped<IAirplaneService, AirplaneService>();
             builder.Services.AddScoped<IAirlineService, AirlineService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
+			builder.Services.AddScoped<ITicketAvailabilityChecker, TicketAvailabilityChecker>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 			builder.Services.AddControllers()
