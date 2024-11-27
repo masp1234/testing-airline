@@ -134,7 +134,7 @@ INSERT INTO `airline_project`.`tickets` (`price`, `ticket_number`, `passenger_id
 (200.00, 'TCK1007', 7, 7, 7, 2),
 (550.00, 'TCK1008', 8, 8, 8, 3),
 (400.00, 'TCK1009', 9, 9, 9, 3),
-(700.00, 'TCK1010', 10, 10, 10, 3);
+(700.00, 'TCK1010', 9, 8, 9, 2);
 
 -- Sample data for `invoices`
 INSERT INTO `airline_project`.`invoices` (`amount_due`, `due_date`, `date_paid`, `is_paid`, `invoice_booking_id`) VALUES
