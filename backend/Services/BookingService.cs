@@ -1,10 +1,8 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
-using AutoMapper;
-
+﻿using AutoMapper;
 using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace backend.Services
 {
@@ -17,6 +15,8 @@ namespace backend.Services
 
         public async Task<ServiceResult<Booking>> CreateBooking(BookingCreationRequest bookingCreationRequest)
         {
+            Dictionary<(int, string), int> ticketClassesPerFlight = [];
+            HashSet<Flight> uniqueFlights = [];
             var user = await _userService.GetUserByEmail(bookingCreationRequest.Email);
             if (user == null)
             {
@@ -34,7 +34,6 @@ namespace backend.Services
                 {
                     return ServiceResult<Booking>.Failure($"No flight found with the id: {ticket.FlightId}.");
                 }
-                // Maybe check, if the tickets are available here?
 
                 var flightClass = await _flightService.GetFlightClassById(ticket.FlightClassId);
 
@@ -42,9 +41,29 @@ namespace backend.Services
                 {
                     return ServiceResult<Booking>.Failure($"No flight class found with the id: {ticket.FlightClassId}.");
                 }
+
+                
                 ticket.FlightClassName = flightClass.Name;
                 ticket.TicketNumber = GenerateUniqueString();
                 ticket.FlightPrice = CalculateTicketPrice(flight, flightClass);
+                var flightIdAndClassName = (ticket.FlightId, flightClass.Name);
+                if (ticketClassesPerFlight.ContainsKey(flightIdAndClassName))
+                {
+                    ticketClassesPerFlight[flightIdAndClassName] += 1;
+                }
+                else
+                {
+                    ticketClassesPerFlight[flightIdAndClassName] = 1;
+                }
+                uniqueFlights.Add(flight);
+
+                
+            }
+
+            bool ticketIsAvailable = CheckTicketAvailability(uniqueFlights, ticketClassesPerFlight);
+            if (!ticketIsAvailable)
+            {
+                return ServiceResult<Booking>.Failure($"Some of the tickets requested are unavailable.");
             }
 
             bookingProcessedRequest.ConfirmationNumber = GenerateUniqueString();
@@ -86,5 +105,35 @@ namespace backend.Services
             string bookingConfirmationNumber = datePart + "-" + stringPart;
             return bookingConfirmationNumber;
         }
+
+        private bool CheckTicketAvailability(HashSet<Flight> flights, Dictionary<(int flightId, string flightClass), int> ticketClassesPerFlight)
+        {
+            foreach (Flight flight in flights)
+            {
+                foreach (var key in ticketClassesPerFlight.Keys)
+                {
+                    if (key.flightId == flight.Id)
+                    {
+                        string flightClass = key.flightClass;
+                        int amountOfTickets = ticketClassesPerFlight[key];
+
+                        bool ticketIsAvailable = flightClass switch
+                        {
+                            "Economy" => flight.EconomyClassSeatsAvailable - amountOfTickets >= 0,
+                            "Business" => flight.BusinessClassSeatsAvailable - amountOfTickets >= 0,
+                            "First Class" => flight.FirstClassSeatsAvailable - amountOfTickets >= 0,
+                            _ => throw new ArgumentException($"'{flightClass}' is not a valid flight class")
+                        };
+
+                        if (!ticketIsAvailable)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
     }
 }

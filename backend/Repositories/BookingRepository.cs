@@ -40,19 +40,14 @@ namespace backend.Repositories
                         TicketNumber = ticket.TicketNumber,
                         TicketsBookingId = createdBooking.Entity.Id
                     });
-                }
 
-                await _context.SaveChangesAsync();
-
-                foreach (var ticket in request.Tickets)
-                {
                     var flight = await context.Flights.FindAsync(ticket.FlightId);
-
                     flight?.DecrementSeatAvailability(ticket.FlightClassName);
                 }
-                await _context.SaveChangesAsync();
 
+                await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
                 return createdBooking.Entity;
             }
             catch (Exception ex)

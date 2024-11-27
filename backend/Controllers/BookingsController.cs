@@ -27,6 +27,7 @@ namespace backend.Controllers
 
             catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to create a booking." });
             }
         }
