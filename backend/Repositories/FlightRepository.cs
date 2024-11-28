@@ -30,6 +30,16 @@ namespace backend.Repositories
             return flight;
         }
 
+        public async Task<List<Flight>> GetFlightsByAirplaneIdAndTimeInterval(Flight newFlight)
+        {
+            var flights = await _context.Flights
+                .Where(flight => flight.FlightsAirplaneId == newFlight.FlightsAirplaneId
+                        && flight.DepartureTime < newFlight.DepartureTime
+                        && flight.CompletionTime < newFlight.CompletionTime)
+                .ToListAsync();
+            return flights;
+        }
+
         public async Task<Flight> Create(Flight newFlight)
         {
             // Check if a flight with the same idempotency key has already been added. If it has, return it instead of creating a new one

@@ -2,6 +2,7 @@
 using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 
 namespace backend.Services
 {
@@ -42,6 +43,14 @@ namespace backend.Services
             (int distance, int duration) = await GetDistanceAndTravelTime(originAirport.Name, arrivalAirport.Name);
             flight.Kilometers = distance;
             flight.TravelTime = (int)duration;
+            // the 120 literal value below is meant to simulate preparation time in minutes between when an airplane lands at an airport, and when it is ready to fly again.
+            flight.CompletionTime = flight.DepartureTime.AddMinutes(duration + 120);
+
+            var overLappingFlights = await _flightRepository.GetFlightsByAirplaneIdAndTimeInterval(flight);
+            if (overLappingFlights.Count > 0)
+            {
+                throw new Exception("There was 1 or more overlapping flights.");
+            }
             flight.Price = CalculateFlightPrice(distance);
             Flight createdFlight = await _flightRepository.Create(flight);
             return createdFlight;
