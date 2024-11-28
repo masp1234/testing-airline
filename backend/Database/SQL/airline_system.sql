@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `departure_port` INT NOT NULL,
   `arrival_port` INT NOT NULL,
   `departure_time` DATETIME NOT NULL,
+  `completion_time` DATETIME NOT NULL,
   `travel_time` INT NOT NULL,
   `price` DECIMAL(10, 2) NOT NULL,
   `kilometers` INT NULL DEFAULT NULL,

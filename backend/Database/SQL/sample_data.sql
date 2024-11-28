@@ -95,20 +95,21 @@ INSERT INTO `airline_project`.`flight_classes` (`name`) VALUES
 ('Business'),
 ('First Class');
 
--- Sample data for `flights`
+-- Sample data for `flights` with `completion_time` manually calculated (including 2-hour prep time)
 INSERT INTO `airline_project`.`flights` 
-(`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `price`, `kilometers`, `economy_class_seats_available`, `business_class_seats_available`, `first_class_seats_available`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`) 
+(`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `completion_time`, `price`, `kilometers`, `economy_class_seats_available`, `business_class_seats_available`, `first_class_seats_available`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`) 
 VALUES
-('DL100', 1, 2, '2024-12-01 08:00:00', 360, 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL100'),
-('UA200', 2, 3, '2024-12-01 10:00:00', 240, 149.99, 300, 120, 15, 3, 2, 2, 'TEST_UA200'),
-('AA300', 3, 4, '2024-12-02 12:00:00', 180, 129.99, 200, 100, 10, 2, 3, 3, 'TEST_AA300'),
-('SW400', 4, 5, '2024-12-03 14:00:00', 300, 179.99, 500, 180, 25, 4, 4, 3, 'TEST_SW400'),
-('JB500', 5, 6, '2024-12-04 16:00:00', 420, 209.99, 600, 200, 30, 6, 5, 4, 'TEST_JB500'),
-('AL600', 6, 7, '2024-12-05 18:00:00', 180, 159.99, 250, 140, 18, 3, 6, 4, 'TEST_AL600'),
-('SP700', 7, 8, '2024-12-06 20:00:00', 360, 189.99, 550, 160, 20, 5, 7, 7, 'TEST_SP700'),
-('FR800', 8, 9, '2024-12-07 22:00:00', 240, 169.99, 400, 110, 12, 2, 8, 7, 'TEST_FR800'),
-('HA900', 9, 10, '2024-12-08 06:00:00', 540, 299.99, 800, 220, 35, 7, 9, 8, 'TEST_HA900'),
-('AL1000', 10, 1, '2024-12-09 08:00:00', 300, 179.99, 450, 130, 10, 3, 10, 10, 'TEST_AL1000');
+('DL100', 1, 2, '2024-12-01 08:00:00', 360, '2024-12-01 16:00:00', 199.99, 450, 150, 20, 5, 1, 'TEST_DL100'),
+('UA200', 2, 3, '2024-12-01 10:00:00', 240, '2024-12-01 16:00:00', 149.99, 300, 120, 15, 3, 2, 'TEST_UA200'),
+('AA300', 3, 4, '2024-12-02 12:00:00', 180, '2024-12-02 17:00:00', 129.99, 200, 100, 10, 2, 3, 'TEST_AA300'),
+('SW400', 4, 5, '2024-12-03 14:00:00', 300, '2024-12-03 23:00:00', 179.99, 500, 180, 25, 4, 3, 'TEST_SW400'),
+('JB500', 5, 6, '2024-12-04 16:00:00', 420, '2024-12-05 04:00:00', 209.99, 600, 200, 30, 6, 4, 'TEST_JB500'),
+('AL600', 6, 7, '2024-12-05 18:00:00', 180, '2024-12-06 01:00:00', 159.99, 250, 140, 18, 3, 6, 'TEST_AL600'),
+('SP700', 7, 8, '2024-12-06 20:00:00', 360, '2024-12-07 08:00:00', 189.99, 550, 160, 20, 5, 7, 'TEST_SP700'),
+('FR800', 8, 9, '2024-12-07 22:00:00', 240, '2024-12-08 08:00:00', 169.99, 400, 110, 12, 2, 8, 'TEST_FR800'),
+('HA900', 9, 10, '2024-12-08 06:00:00', 540, '2024-12-08 19:00:00', 299.99, 800, 220, 35, 7, 9, 'TEST_HA900'),
+('AL1000', 10, 1, '2024-12-09 08:00:00', 300, '2024-12-09 17:00:00', 179.99, 450, 130, 10, 3, 'TEST_AL1000');
+
 
 
 -- Sample data for `passengers`
