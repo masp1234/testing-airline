@@ -34,20 +34,20 @@ namespace backend.Repositories
         {
             var flights = await _context.Flights
                 .Where(flight => flight.FlightsAirplaneId == newFlight.FlightsAirplaneId
-                        && flight.DepartureTime < newFlight.DepartureTime
-                        && flight.CompletionTime < newFlight.CompletionTime)
+                        && flight.DepartureTime < newFlight.CompletionTime
+                        && flight.CompletionTime > newFlight.DepartureTime)
                 .ToListAsync();
             return flights;
         }
 
+        public async Task<Flight?> GetFlightByIdempotencyKey(string idempotencyKey)
+        {
+            Flight? flight = await _context.Flights.FirstOrDefaultAsync((flight) => flight.IdempotencyKey == idempotencyKey);
+            return flight;
+        }
+
         public async Task<Flight> Create(Flight newFlight)
         {
-            // Check if a flight with the same idempotency key has already been added. If it has, return it instead of creating a new one
-            Flight? existingFlight = await _context.Flights.FirstOrDefaultAsync((flight) => flight.IdempotencyKey == newFlight.IdempotencyKey);
-            if (existingFlight != null)
-            {
-                return existingFlight;
-            }
             await _context.Flights.AddAsync(newFlight);
             await _context.SaveChangesAsync();
             return newFlight;
