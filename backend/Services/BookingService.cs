@@ -21,8 +21,6 @@ namespace backend.Services
 
         public async Task<ServiceResult<Booking>> CreateBooking(BookingCreationRequest bookingCreationRequest)
         {
-            Dictionary<(int, string), int> ticketClassesPerFlight = [];
-            HashSet<Flight> uniqueFlights = [];
             var user = await _userService.GetUserByEmail(bookingCreationRequest.Email);
             if (user == null)
             {
