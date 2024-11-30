@@ -68,15 +68,7 @@ namespace backend.Services
         }
         private decimal CalculateTicketPrice(Flight flight, FlightClass flightClass)
         {
-            decimal multiplier = flightClass.Name switch
-            {
-                "Economy" => 1.00m,
-                "Business" => 1.50m,
-                "First Class" => 3.00m,
-                _ => 0
-            };
-
-            decimal ticketPrice = multiplier * flight.Price;
+            decimal ticketPrice = flightClass.PriceMultiplier * flight.Price;
             return ticketPrice;
         }
 

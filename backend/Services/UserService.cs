@@ -61,7 +61,7 @@ namespace backend.Services
         {
             User userToCreate = new User { 
                 Email = userCreationRequest.Email,
-                Role = UserRole.Customer.ToString()
+                Role = UserRole.Customer
                                             
             };
 
@@ -74,7 +74,7 @@ namespace backend.Services
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("email", user.Email)
             };
 
