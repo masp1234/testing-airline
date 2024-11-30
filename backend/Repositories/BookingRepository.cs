@@ -47,7 +47,6 @@ namespace backend.Repositories
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-
                 return createdBooking.Entity;
             }
             catch (Exception)

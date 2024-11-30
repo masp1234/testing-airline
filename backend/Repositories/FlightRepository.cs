@@ -1,6 +1,8 @@
 ﻿using backend.Database;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
+using System.Data;
 
 namespace backend.Repositories
 {
@@ -30,18 +32,72 @@ namespace backend.Repositories
             return flight;
         }
 
-        public async Task<Flight> Create(Flight newFlight)
+        public async Task<List<Flight>> GetFlightsByAirplaneIdAndTimeInterval(Flight newFlight)
         {
-            // Check if a flight with the same idempotency key has already been added. If it has, return it instead of creating a new one
-            Flight? existingFlight = await _context.Flights.FirstOrDefaultAsync((flight) => flight.IdempotencyKey == newFlight.IdempotencyKey);
-            if (existingFlight != null)
-            {
-                return existingFlight;
-            }
-            await _context.Flights.AddAsync(newFlight);
-            await _context.SaveChangesAsync();
-            return newFlight;
+            var flights = await _context.Flights
+                .Where(flight => flight.FlightsAirplaneId == newFlight.FlightsAirplaneId
+                        && flight.DepartureTime < newFlight.CompletionTime
+                        && flight.CompletionTime > newFlight.DepartureTime)
+                .ToListAsync();
+            return flights;
         }
+
+        public async Task<Flight?> GetFlightByIdempotencyKey(string idempotencyKey)
+        {
+            Flight? flight = await _context.Flights.FirstOrDefaultAsync((flight) => flight.IdempotencyKey == idempotencyKey);
+            return flight;
+        }
+
+        public async Task<Flight> Create(Flight flight)
+        {
+            /*
+               Would prefer not to handle connections manually like this, and instead let EF Core handle it all,
+               but this is needed to retrieve the last inserted ID from the stored procedure.
+            */
+
+            /*
+               the 'using' statement makes sure that the database connection is closed/released 
+               to the connection pool after the clode block ends, regardless if an exception happens or not.
+               Its the same as using try, catch and finally, where you then close the connection in the 'finally' block.
+             */
+            using var connection = _context.Database.GetDbConnection();
+            await connection.OpenAsync();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "CheckAndInsertFlight";
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add(new MySqlParameter("@airplaneId", flight.FlightsAirplaneId));
+            command.Parameters.Add(new MySqlParameter("@departureTime", flight.DepartureTime));
+            command.Parameters.Add(new MySqlParameter("@completionTime", flight.CompletionTime));
+            command.Parameters.Add(new MySqlParameter("@flightCode", flight.FlightCode));
+            command.Parameters.Add(new MySqlParameter("@departurePort", flight.DeparturePort));
+            command.Parameters.Add(new MySqlParameter("@arrivalPort", flight.ArrivalPort));
+            command.Parameters.Add(new MySqlParameter("@travelTime", flight.TravelTime));
+            command.Parameters.Add(new MySqlParameter("@price", flight.Price));
+            command.Parameters.Add(new MySqlParameter("@kilometers", flight.Kilometers));
+            command.Parameters.Add(new MySqlParameter("@economySeats", flight.EconomyClassSeatsAvailable));
+            command.Parameters.Add(new MySqlParameter("@businessSeats", flight.BusinessClassSeatsAvailable));
+            command.Parameters.Add(new MySqlParameter("@firstClassSeats", flight.FirstClassSeatsAvailable));
+            command.Parameters.Add(new MySqlParameter("@airlineId", flight.FlightsAirlineId));
+            command.Parameters.Add(new MySqlParameter("@idempotencyKey", flight.IdempotencyKey));
+
+            // Output parameter
+            var newFlightIdParam = new MySqlParameter("@newFlightId", MySqlDbType.Int32)
+            {
+                Direction = ParameterDirection.Output
+            };
+            command.Parameters.Add(newFlightIdParam);
+
+            // Execute the command that calls the "CheckAndInsertFlight" stored procedure.
+            await command.ExecuteNonQueryAsync();
+
+            flight.Id = (int)newFlightIdParam.Value;
+
+            return flight;
+        }
+
+
 
         public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
         {

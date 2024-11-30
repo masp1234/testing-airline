@@ -31,6 +31,8 @@ namespace backend.Config
 
             CreateMap<TicketCreationRequest, TicketProcessedRequest>();
 
+			CreateMap<Booking, BookingCreationResponse>();
+
             
         }
     }
