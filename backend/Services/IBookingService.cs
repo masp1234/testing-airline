@@ -5,6 +5,6 @@ namespace backend.Services
 {
     public interface IBookingService
     {
-        Task<ServiceResult<Booking>> CreateBooking(BookingCreationRequest bookingCreationRequest);
+        Task<ServiceResult<BookingCreationResponse>> CreateBooking(BookingCreationRequest bookingCreationRequest);
     }
 }

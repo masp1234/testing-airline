@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `departure_port` INT NOT NULL,
   `arrival_port` INT NOT NULL,
   `departure_time` DATETIME NOT NULL,
+  `completion_time` DATETIME NOT NULL,
   `travel_time` INT NOT NULL,
   `price` DECIMAL(10, 2) NOT NULL,
   `kilometers` INT NULL DEFAULT NULL,
@@ -204,6 +205,98 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
     REFERENCES `airline_project`.`flight_classes` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
+
+-- Create stored procedures
+
+-- CheckAndInsertFlight stored procedure
+DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `CheckAndInsertFlight`(
+    IN airplaneId INT,
+    IN departureTime DATETIME,
+    IN completionTime DATETIME,
+    IN flightCode VARCHAR(45),
+    IN departurePort INT,
+    IN arrivalPort INT,
+    IN travelTime INT,
+    IN price DECIMAL(10, 2),
+    IN kilometers INT,
+    IN economySeats INT,
+    IN businessSeats INT,
+    IN firstClassSeats INT,
+    IN airlineId INT,
+    IN idempotencyKey VARCHAR(60),
+    OUT newFlightId INT
+)
+BEGIN
+    -- Start transaction
+    DECLARE exit HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Transaction failed. Overlap detected or other error occurred.';
+    END;
+
+    START TRANSACTION;
+
+    -- Check for overlapping flights
+    IF EXISTS (
+        SELECT 1
+        FROM flights
+        WHERE flights_airplane_id = airplaneId
+          AND departure_time < completionTime
+          AND completion_time > departureTime
+    ) THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Overlap detected with existing flight schedule.';
+    ELSE
+        -- Insert the new flight
+        INSERT INTO flights 
+        (
+            flight_code,
+            departure_port,
+            arrival_port,
+            departure_time,
+            travel_time,
+            price,
+            kilometers,
+            economy_class_seats_available,
+            business_class_seats_available,
+            first_class_seats_available,
+            flights_airline_id,
+            flights_airplane_id,
+            completion_time,
+            idempotency_key
+        )
+        VALUES 
+        (
+            flightCode,
+            departurePort,
+            arrivalPort,
+            departureTime,
+            travelTime,
+            price,
+            kilometers,
+            economySeats,
+            businessSeats,
+            firstClassSeats,
+            airlineId,
+            airplaneId,
+            completionTime,
+            idempotencyKey
+        );
+
+        -- Get the ID of the newly inserted flight
+        SET newFlightId = LAST_INSERT_ID();
+    END IF;
+
+    -- Commit the transaction
+    COMMIT;
+END$$
+DELIMITER ;
+-- CheckAndInsertFlight stored procedure end
+
+
 -- -----------------------------------------------------
 -- Application User Role Creation
 -- -----------------------------------------------------
@@ -222,3 +315,5 @@ GRANT SELECT, CREATE ON TABLE flights TO app_user;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
