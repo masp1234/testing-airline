@@ -17,7 +17,7 @@ namespace backend.Controllers
                 var result = await _bookingService.CreateBooking(bookingCreationRequest);
                 if (result.IsSucces)
                 {
-                    return Ok(result.Data);
+                    return StatusCode(201, new { message = result.Message, createdBooking = result.Data});
                 }
                 else
                 {

@@ -9,13 +9,15 @@ namespace backend.Services
         IFlightRepository flightRepository,
         IMapper mapper,
         IDistanceApiService distanceApiService,
-        IAirportRepository airportRepository
+        IAirportRepository airportRepository,
+        IAirplaneService airplaneService
             ) : IFlightService
     {
         private readonly IFlightRepository _flightRepository = flightRepository;
         private readonly IMapper _mapper = mapper;
         private readonly IDistanceApiService _distanceApiService = distanceApiService;
         private readonly IAirportRepository _airportRepository = airportRepository;
+        private readonly IAirplaneService _airplaneService = airplaneService;
 
         public async Task<List<FlightResponse>> GetAllFlights()
         {
@@ -31,6 +33,16 @@ namespace backend.Services
         }
         public async Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest)
         {
+            Flight? existingFlight = await _flightRepository.GetFlightByIdempotencyKey(flightCreationRequest.IdempotencyKey);
+            if (existingFlight != null)
+            {
+                return existingFlight;
+            }
+            var airplane = await _airplaneService.GetAirplaneById(flightCreationRequest.AirplaneId);
+            if (airplane == null)
+            {
+                throw new InvalidDataException("The chosen airplane could not be found");
+            }
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
             flight.FlightCode = "123FLIGHTCODE";
             var airports = await _airportRepository.FindByIds(flight.DeparturePort, flight.ArrivalPort);
@@ -42,6 +54,18 @@ namespace backend.Services
             (int distance, int duration) = await GetDistanceAndTravelTime(originAirport.Name, arrivalAirport.Name);
             flight.Kilometers = distance;
             flight.TravelTime = (int)duration;
+            // the 120 literal value below is meant to simulate preparation time in minutes between when an airplane lands at an airport, and when it is ready to fly again.
+            flight.CompletionTime = flight.DepartureTime.AddMinutes(duration + 120);
+
+            var overLappingFlights = await _flightRepository.GetFlightsByAirplaneIdAndTimeInterval(flight);
+            if (overLappingFlights.Count > 0)
+            {
+                throw new Exception("There was 1 or more overlapping flights.");
+            }
+
+            flight.EconomyClassSeatsAvailable = airplane.EconomyClassSeats;
+            flight.BusinessClassSeatsAvailable = airplane.BusinessClassSeats;
+            flight.FirstClassSeatsAvailable = airplane.FirstClassSeats;
             flight.Price = CalculateFlightPrice(distance);
             Flight createdFlight = await _flightRepository.Create(flight);
             return createdFlight;
