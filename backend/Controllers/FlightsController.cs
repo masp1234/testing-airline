@@ -67,7 +67,7 @@ namespace backend.Controllers
 
 		// Dummy endpoint to test email sending
 		// Sends both the 'cancellation' and 'change' email
-		[HttpGet("cancelFlight")]
+		[HttpGet("emailTest")]
 		public async Task<ActionResult> DummyCancelFlight()
 		{
 			try
