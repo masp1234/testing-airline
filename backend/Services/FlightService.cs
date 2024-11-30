@@ -11,7 +11,7 @@ namespace backend.Services
         IMapper mapper,
         IDistanceApiService distanceApiService,
         IAirportRepository airportRepository,
-        IEmailService emailService
+        IEmailService emailService,
         IAirplaneService airplaneService
             ) : IFlightService
     {
