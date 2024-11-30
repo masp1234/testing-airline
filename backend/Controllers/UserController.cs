@@ -84,7 +84,7 @@ namespace backend.Controllers
 						SameSite = SameSiteMode.Strict,
 					});
 					// Return response message and user role from token
-					return Ok(new { message = "Login successful.", role = user.Role });
+					return Ok(new { message = "Login successful.", role = user.Role, email = user.Email });
 				}
 			}
 

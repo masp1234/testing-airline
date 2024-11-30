@@ -167,6 +167,9 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.DepartureTime)
                 .HasColumnType("datetime")
                 .HasColumnName("departure_time");
+            entity.Property(e => e.CompletionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("completion_time");
             entity.Property(e => e.FlightCode)
                 .HasMaxLength(45)
                 .HasColumnName("flight_code");

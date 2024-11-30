@@ -35,14 +35,11 @@ namespace backend.Services
         {
             List<AirplaneBookedTimeSlot> bookedTimeSlots = flights.Select((flight) =>
             {
-                int airplanePreparationTimeInMinutes = 120;
-                DateTime timeSlotEnd = flight.DepartureTime.AddMinutes(flight.TravelTime + airplanePreparationTimeInMinutes);
-
                 return new AirplaneBookedTimeSlot()
                 {
                     FlightId = flight.Id,
                     TimeSlotStart = flight.DepartureTime,
-                    TimeSlotEnd = timeSlotEnd
+                    TimeSlotEnd = flight.CompletionTime
                 };
             }).ToList();
 
