@@ -2,6 +2,7 @@
 using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
+using backend.Enums;
 
 namespace backend.Services
 {
@@ -9,13 +10,15 @@ namespace backend.Services
         IFlightRepository flightRepository,
         IMapper mapper,
         IDistanceApiService distanceApiService,
-        IAirportRepository airportRepository
+        IAirportRepository airportRepository,
+        IEmailService emailService
             ) : IFlightService
     {
         private readonly IFlightRepository _flightRepository = flightRepository;
         private readonly IMapper _mapper = mapper;
         private readonly IDistanceApiService _distanceApiService = distanceApiService;
         private readonly IAirportRepository _airportRepository = airportRepository;
+        private readonly IEmailService _emailService = emailService;
 
         public async Task<List<FlightResponse>> GetAllFlights()
         {
@@ -80,5 +83,18 @@ namespace backend.Services
             var flightClass = await _flightRepository.GetFlightClassById(id);
             return flightClass;
         }
+
+        // Dummy methods to simulate a change and cancel in flight to test email sending. Delete/Refactor later.
+        public async Task CancelFlight()
+        {
+            var dummyPassenger = new List<Passenger> { new() { Email = "august.hawk@gmail.com" } };
+            await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Cancelled);
+        }
+        public async Task ChangeFlight()
+        {
+            var dummyPassenger = new List<Passenger> { new() { Email = "august.hawk@gmail.com" } };
+            await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Changed);
+        }
+
     }
 }

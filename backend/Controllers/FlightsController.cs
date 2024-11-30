@@ -64,5 +64,24 @@ namespace backend.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights by departure, destination and departure date." });
 			}
 		}
+
+		// Dummy endpoint to test email sending
+		// Sends both the 'cancellation' and 'change' email
+		[HttpGet("cancelFlight")]
+		public async Task<ActionResult> DummyCancelFlight()
+		{
+			try
+			{
+				await _flightService.CancelFlight();
+				await _flightService.ChangeFlight();
+				return Ok(new { message = "Email(s) has been sendt regarding cancellation of flight" });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to cancel flight." });
+			}
+		}
+
 	}
 }
