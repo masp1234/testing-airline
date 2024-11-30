@@ -68,7 +68,7 @@ namespace backend.Services
         private MimeMessage CreateEmailMessage(string recipientEmail, string subject, string body)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Flight Booking System", _emailSender));
+            message.From.Add(new MailboxAddress("Icarus Airlines", _emailSender));
             message.To.Add(new MailboxAddress("", recipientEmail));
             message.Subject = subject;
 
