@@ -111,12 +111,12 @@ namespace backend.Services
         // Dummy methods to simulate a change and cancel in flight to test email sending. Delete/Refactor later.
         public async Task CancelFlight()
         {
-            var dummyPassenger = new List<Passenger> { new() { Email = "august.hawk@gmail.com" } };
+            var dummyPassenger = new List<Passenger> { new() { Email = "" } };
             await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Cancelled);
         }
         public async Task ChangeFlight()
         {
-            var dummyPassenger = new List<Passenger> { new() { Email = "august.hawk@gmail.com" } };
+            var dummyPassenger = new List<Passenger> { new() { Email = "" } };
             await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Changed);
         }
 
