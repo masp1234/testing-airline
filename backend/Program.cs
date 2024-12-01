@@ -125,6 +125,7 @@ namespace backend
             builder.Services.AddScoped<IAirlineService, AirlineService>();
             builder.Services.AddScoped<IBookingService, BookingService>();
 			builder.Services.AddScoped<ITicketAvailabilityChecker, TicketAvailabilityChecker>();
+			builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
