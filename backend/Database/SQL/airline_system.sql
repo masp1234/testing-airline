@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`bookings` (
 CREATE TABLE IF NOT EXISTS `airline_project`.`flight_classes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
+  `price_multiplier` DECIMAL(3, 2),
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 

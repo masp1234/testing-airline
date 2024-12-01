@@ -6,6 +6,13 @@ namespace backend.Repositories
 {
     public class BookingRepository(DatabaseContext context) : IBookingRepository
     {
+        public async Task<List<Booking>> GetBookingsByUserId(int id)
+        {
+            var bookings = await _context.Bookings
+                .Where(booking => booking.UserId == id)
+                .ToListAsync();
+            return bookings;
+        }
         private readonly DatabaseContext _context = context;
         public async Task<Booking> CreateBooking(BookingProcessedRequest request)
         {

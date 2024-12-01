@@ -19,12 +19,24 @@ namespace backend.Services
         private readonly IMapper _mapper = mapper;
         private readonly ITicketAvailabilityChecker _ticketAvailabilityChecker = ticketAvailabilityChecker;
 
-        public async Task<ServiceResult<BookingCreationResponse>> CreateBooking(BookingCreationRequest bookingCreationRequest)
+        public async Task<ServiceResult<List<BookingResponse>>> GetBookingsByUserEmail(string email)
+        {
+            var user = await _userService.GetUserByEmail(email);
+            if (user == null) {
+                return ServiceResult<List<BookingResponse>>.Failure($"No user found with the email {email}");
+            }
+
+            var bookings = await _bookingRepository.GetBookingsByUserId(user.Id);
+            var mappedBookings = _mapper.Map<List<BookingResponse>>(bookings);
+            return ServiceResult<List<BookingResponse>>.Success(mappedBookings);
+        }
+
+        public async Task<ServiceResult<BookingResponse>> CreateBooking(BookingCreationRequest bookingCreationRequest)
         {
             var user = await _userService.GetUserByEmail(bookingCreationRequest.Email);
             if (user == null)
             {
-                return ServiceResult<BookingCreationResponse>.Failure($"No user found with the email: {bookingCreationRequest.Email}.");
+                return ServiceResult<BookingResponse>.Failure($"No user found with the email: {bookingCreationRequest.Email}.");
             }
 
             // Map the CreationRequest DTO to ProcessedRequest DTO to allow for more properties without polluting the CreationRequest DTO
@@ -36,14 +48,14 @@ namespace backend.Services
 
                 if (flight == null)
                 {
-                    return ServiceResult<BookingCreationResponse>.Failure($"No flight found with the id: {ticket.FlightId}.");
+                    return ServiceResult<BookingResponse>.Failure($"No flight found with the id: {ticket.FlightId}.");
                 }
 
                 var flightClass = await _flightService.GetFlightClassById(ticket.FlightClassId);
 
                 if (flightClass == null)
                 {
-                    return ServiceResult<BookingCreationResponse>.Failure($"No flight class found with the id: {ticket.FlightClassId}.");
+                    return ServiceResult<BookingResponse>.Failure($"No flight class found with the id: {ticket.FlightClassId}.");
                 }
 
                 ticket.FlightClassName = flightClass.Name;
@@ -58,14 +70,14 @@ namespace backend.Services
             bool ticketsAreAvailable = _ticketAvailabilityChecker.CheckTicketAvailability();
             if (!ticketsAreAvailable)
             {
-                return ServiceResult<BookingCreationResponse>.Failure($"Some of the tickets requested are unavailable.");
+                return ServiceResult<BookingResponse>.Failure($"Some of the tickets requested are unavailable.");
             }
 
             bookingProcessedRequest.ConfirmationNumber = GenerateUniqueString();
             bookingProcessedRequest.UserId = user.Id;
             var createdBooking = await _bookingRepository.CreateBooking(bookingProcessedRequest);
-            var mappedBooking = _mapper.Map<BookingCreationResponse>(createdBooking);
-            return ServiceResult<BookingCreationResponse>.Success(mappedBooking, "The booking was created successfully.");
+            var mappedBooking = _mapper.Map<BookingResponse>(createdBooking);
+            return ServiceResult<BookingResponse>.Success(mappedBooking, "The booking was created successfully.");
         }
         private decimal CalculateTicketPrice(Flight flight, FlightClass flightClass)
         {
