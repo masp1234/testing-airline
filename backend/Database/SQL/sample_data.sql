@@ -65,35 +65,31 @@ INSERT INTO `airline_project`.`airports` (`name`, `code`, `city_id`) VALUES
 
 -- Sample data for `users`
 INSERT INTO `airline_project`.`users` (`email`, `password`, `role`) VALUES
-('john.doe1@example.com', 'password1', 'Admin'),
-('jane.smith2@example.com', 'password2', 'Customer'),
-('michael.jones3@example.com', 'password3', 'Admin'),
-('emily.johnson4@example.com', 'password4', 'Customer'),
-('william.brown5@example.com', 'password5', 'Admin'),
-('olivia.davis6@example.com', 'password6', 'Customer'),
-('liam.wilson7@example.com', 'password7', 'Admin'),
-('sophia.moore8@example.com', 'password8', 'Customer'),
-('james.taylor9@example.com', 'password9', 'Admin'),
-('isabella.miller10@example.com', 'password10', 'Customer');
+('admin@example.com', 'AQAAAAIAAYagAAAAECrPK/OaPJ1TtlTl0to+E6f86of8ocaDjTNDunN9fPPlIpFUd787gRpL2lusp8srkg==', 'Admin'),
+('customer@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
+('customer2@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
+('customer3@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
+('customer4@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
+('customer5@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer');
 
 -- Sample data for `bookings`
 INSERT INTO `airline_project`.`bookings` (`confirmation_number`, `user_id`) VALUES
-('ABC123', 1),
+('ABC123', 2),
 ('DEF456', 2),
 ('GHI789', 3),
-('JKL012', 4),
-('MNO345', 5),
-('PQR678', 6),
-('STU901', 7),
-('VWX234', 8),
-('YZA567', 9),
-('BCD890', 10);
+('JKL012', 3),
+('MNO345', 4),
+('PQR678', 4),
+('STU901', 5),
+('VWX234', 5),
+('YZA567', 5),
+('BCD890', 5);
 
 -- Sample data for `flight_classes`
-INSERT INTO `airline_project`.`flight_classes` (`name`) VALUES
-('Economy'),
-('Business'),
-('First Class');
+INSERT INTO `airline_project`.`flight_classes` (`name`, `price_multiplier`) VALUES
+('EconomyClass', 1.00),
+('BusinessClass', 1.50),
+('FirstClass', 3.00);
 
 -- Sample data for `flights`
 INSERT INTO `airline_project`.`flights` 

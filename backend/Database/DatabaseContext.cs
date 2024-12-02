@@ -215,8 +215,10 @@ public partial class DatabaseContext : DbContext
             entity.ToTable("flight_classes");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.PriceMultiplier)
+                .HasColumnName("price_multiplier");
             entity.Property(e => e.Name)
-                .HasMaxLength(45)
+                .HasConversion<string>()
                 .HasColumnName("name");
         });
 
@@ -330,7 +332,7 @@ public partial class DatabaseContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("password");
             entity.Property(e => e.Role)
-                .HasMaxLength(8)
+                .HasConversion<string>()
                 .HasColumnName("role");
         });
 

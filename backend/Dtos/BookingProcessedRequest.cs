@@ -1,4 +1,5 @@
-﻿namespace backend.Dtos
+﻿using backend.Models;
+namespace backend.Dtos
 {
     public class BookingProcessedRequest
     {
@@ -21,7 +22,7 @@
 
         public decimal FlightPrice { get; set; }
 
-        public string FlightClassName { get; set; }
+        public FlightClassName FlightClassName { get; set; }
 
         public string TicketNumber { get; set; }
     }
