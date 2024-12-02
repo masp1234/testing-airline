@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-	[Authorize (Roles = "Admin")]
+	
 	[ApiController]
 	[Route("/api/mysql/[controller]")]
 	public class FlightsController(IFlightService flightService) : ControllerBase
@@ -27,7 +27,7 @@ namespace backend.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights." });
 			}
 		}
-
+		[Authorize (Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> AddFlight([FromBody] FlightCreationRequest flightCreationRequest)
 		{
