@@ -2,7 +2,7 @@
 
 namespace backend.Dtos
 {
-    public class BookingCreationResponse
+    public class BookingResponse
     {
         public int Id { get; set; }
 
