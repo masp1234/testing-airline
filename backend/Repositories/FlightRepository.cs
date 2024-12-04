@@ -32,6 +32,17 @@ namespace backend.Repositories
             return flight;
         }
 
+        public async Task<Flight?> GetFlightWithRelationshipsById(int id)
+        {
+            var flight = await _context.Flights
+                .Include(flight => flight.FlightsAirline)
+                .Include(flight => flight.FlightsAirplane)
+                .Include(flight => flight.DeparturePortNavigation)
+                .Include(flight => flight.ArrivalPortNavigation)
+                .FirstOrDefaultAsync(flight => flight.Id == id);
+            return flight;
+        }
+
         public async Task<List<Flight>> GetFlightsByAirplaneIdAndTimeInterval(Flight newFlight)
         {
             var flights = await _context.Flights
