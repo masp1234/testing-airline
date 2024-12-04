@@ -116,7 +116,6 @@ namespace backend.Services
                 throw new Exception("Flight could not be found."); // Could potentially define more specific exceptions (EntityNotfoundException)
             }
             var passengers = deletedFlight.Tickets.Select(ticket => ticket.Passenger).ToList();
-            Console.WriteLine($"Passengers: {passengers.Count}"); // Debugging
             try
             {
                 await _emailService.SendFlightEmailAsync(passengers, FlightStatus.Cancelled);
