@@ -7,6 +7,7 @@ namespace backend.Repositories
     {
         Task<List<Flight>> GetAll();
         Task<Flight?> GetFlightById(int id);
+        Task<Flight?> GetFlightWithRelationshipsById(int id);
         Task<Flight?> GetFlightByIdempotencyKey(string idempotencyKey);
 
         Task<List<Flight>> GetFlightsByAirplaneIdAndTimeInterval(Flight newFlight);

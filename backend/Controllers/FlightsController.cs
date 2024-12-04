@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
 
-	[ApiController]
+    [ApiController]
 	[Route("/api/mysql/[controller]")]
 	public class FlightsController(IFlightService flightService) : ControllerBase
 	{
@@ -27,7 +27,27 @@ namespace backend.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to get flights." });
 			}
 		}
-    
+
+		[HttpGet("{id}")]
+		public async Task<IActionResult> GetFlightById(int id)
+		{
+			try
+			{
+				var flight = await _flightService.GetFlightWithRelationshipsById(id);
+				if (flight == null)
+				{
+					return NotFound(new { message = $"No flight with ID '{id}' was found." });
+				}
+				return Ok(new { data = flight });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				SentrySdk.CaptureException(ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occured while trying to get flight with ID {id}." });
+			}
+		}
+
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<IActionResult> AddFlight([FromBody] FlightCreationRequest flightCreationRequest)
@@ -66,9 +86,17 @@ namespace backend.Controllers
 			}
 		}
 
-		// Dummy endpoint to test email sending
-		// Sends both the 'cancellation' and 'change' email
-		[HttpGet("emailTest")]
+		[HttpPatch("{id}")]
+		public async Task<IActionResult> UpdateFlight([FromBody]UpdateFlightRequest updateFlightRequest, int id)
+		{
+			Console.WriteLine(updateFlightRequest.DepartureDateTime);
+			Console.WriteLine(id);
+			return Ok(updateFlightRequest.DepartureDateTime);
+		}
+
+        // Dummy endpoint to test email sending
+        // Sends both the 'cancellation' and 'change' email
+        [HttpGet("emailTest")]
 		public async Task<ActionResult> DummyCancelFlight()
 		{
 			try

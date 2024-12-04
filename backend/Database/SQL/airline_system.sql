@@ -149,23 +149,6 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
--- Table `airline_project`.`invoices`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `airline_project`.`invoices` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `amount_due` DOUBLE NOT NULL,
-  `due_date` DATE NOT NULL,
-  `date_paid` DATE NULL DEFAULT NULL,
-  `is_paid` TINYINT NOT NULL,
-  `invoice_booking_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `invoice_booking_id_idx` (`invoice_booking_id` ASC) VISIBLE,
-  CONSTRAINT `invoice_booking_id`
-    FOREIGN KEY (`invoice_booking_id`)
-    REFERENCES `airline_project`.`bookings` (`id`)
-) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
-
--- -----------------------------------------------------
 -- Table `airline_project`.`passengers`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (

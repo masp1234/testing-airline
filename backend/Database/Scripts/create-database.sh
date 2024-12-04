@@ -6,11 +6,7 @@ database_name=airline_project
 user=root
 password=123123
 
-#!/bin/bash
-
 docker stop $container_name && docker rm $container_name
-
-echo All operations on port 3306 have been terminated.
 
 docker run --name $container_name -e MYSQL_ROOT_PASSWORD=$password -p 3306:3306 -d mysql
 echo "Starting $container_name container..."

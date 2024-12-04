@@ -11,6 +11,8 @@ namespace backend.Dtos
 
         public DateTime DepartureTime { get; set; }
 
+        public DateTime CompletionTime { get; set; }
+
         public int TravelTime { get; set; }
 
         public string? Kilometers { get; set; }

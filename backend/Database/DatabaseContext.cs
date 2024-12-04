@@ -31,8 +31,6 @@ public partial class DatabaseContext : DbContext
 
     public virtual DbSet<FlightClass> FlightClasses { get; set; }
 
-    public virtual DbSet<Invoice> Invoices { get; set; }
-
     public virtual DbSet<Passenger> Passengers { get; set; }
 
     public virtual DbSet<State> States { get; set; }
@@ -220,27 +218,6 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Name)
                 .HasConversion<string>()
                 .HasColumnName("name");
-        });
-
-        modelBuilder.Entity<Invoice>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PRIMARY");
-
-            entity.ToTable("invoices");
-
-            entity.HasIndex(e => e.InvoiceBookingId, "invoice_booking_id_idx");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AmountDue).HasColumnName("amount_due");
-            entity.Property(e => e.DatePaid).HasColumnName("date_paid");
-            entity.Property(e => e.DueDate).HasColumnName("due_date");
-            entity.Property(e => e.InvoiceBookingId).HasColumnName("invoice_booking_id");
-            entity.Property(e => e.IsPaid).HasColumnName("is_paid");
-
-            entity.HasOne(d => d.InvoiceBooking).WithMany(p => p.Invoices)
-                .HasForeignKey(d => d.InvoiceBookingId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("invoice_booking_id");
         });
 
         modelBuilder.Entity<Passenger>(entity =>
