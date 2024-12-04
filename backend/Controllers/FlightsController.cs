@@ -73,7 +73,7 @@ namespace backend.Controllers
 		{
 			try
 			{
-				await _flightService.CancelFlight();
+			//	await _flightService.CancelFlight();
 				await _flightService.ChangeFlight();
 				return Ok(new { message = "Email(s) has been sendt regarding cancellation of flight" });
 			}
@@ -84,5 +84,24 @@ namespace backend.Controllers
 			}
 		}
 
+	//	[Authorize(Roles = "Admin")]
+		[HttpDelete("deleteFlight")]
+		public async Task<IActionResult> DeleteFlight([FromQuery] int flightId)
+		{
+			if (flightId == 0)
+			{
+				return BadRequest(new { message = "The request is missing flightId." });
+			}
+			try
+			{
+				await _flightService.CancelFlight(flightId);
+				return Ok(new {message = $"Flight with ID: {flightId} was deleted successfully!" });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to delete a flight." });
+			}
+		}
 	}
 }

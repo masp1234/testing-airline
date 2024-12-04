@@ -97,7 +97,17 @@ namespace backend.Repositories
             return flight;
         }
 
-
+        public async Task<Flight> Delete(int id)
+        {
+            var flight = await _context.Flights.FindAsync(id);
+            if (flight == null)
+            {
+                return null;
+            }
+            _context.Flights.Remove(flight);
+            await _context.SaveChangesAsync();
+            return flight;
+        }
 
         public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
         {

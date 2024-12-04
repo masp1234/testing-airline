@@ -13,7 +13,7 @@ namespace backend.Services
 
         Task<FlightClass?> GetFlightClassById(int id);
 
-        Task CancelFlight();
+        Task<Task> CancelFlight(int id);
 
         Task ChangeFlight();
     }
