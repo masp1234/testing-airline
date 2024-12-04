@@ -88,10 +88,11 @@ namespace backend.Controllers
 		[HttpDelete("deleteFlight")]
 		public async Task<IActionResult> DeleteFlight([FromQuery] int flightId)
 		{
-			if (flightId == 0)
+			if (flightId <= 0)
 			{
-				return BadRequest(new { message = "The request is missing flightId." });
+    			return BadRequest(new { message = "Invalid flightId provided." });
 			}
+
 			try
 			{
 				await _flightService.CancelFlight(flightId);

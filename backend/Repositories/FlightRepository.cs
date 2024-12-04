@@ -99,13 +99,23 @@ namespace backend.Repositories
 
         public async Task<Flight> Delete(int id)
         {
-            var flight = await _context.Flights.FindAsync(id);
+            var flight = await _context.Flights
+                .Include(f => f.Tickets)
+                .ThenInclude(t => t.Passenger)
+                .FirstOrDefaultAsync(f => f.Id == id);
             if (flight == null)
             {
                 return null;
             }
             _context.Flights.Remove(flight);
+            try
+            {
             await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DbUpdateException("Database Error, could not delete flight", ex);
+            }
             return flight;
         }
 
