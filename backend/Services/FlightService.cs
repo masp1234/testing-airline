@@ -34,6 +34,13 @@ namespace backend.Services
             var flight = await _flightRepository.GetFlightById(id);
             return flight;
         }
+
+        public async Task<FlightResponse?> GetFlightWithRelationshipsById(int id)
+        {
+            var flight = await _flightRepository.GetFlightWithRelationshipsById(id);
+            var mappedFlight = _mapper.Map<FlightResponse>(flight);
+            return mappedFlight;
+        }
         public async Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest)
         {
             Flight? existingFlight = await _flightRepository.GetFlightByIdempotencyKey(flightCreationRequest.IdempotencyKey);
