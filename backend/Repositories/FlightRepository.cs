@@ -107,10 +107,30 @@ namespace backend.Repositories
             {
                 return null;
             }
+
+            // Remove associated tickets, passengers and bookings
+            if (flight.Tickets != null && flight.Tickets.Any())
+            {
+                _context.Tickets.RemoveRange(flight.Tickets);
+
+                foreach (var ticket in flight.Tickets)
+                {
+                    if (ticket.Passenger != null)
+                    {
+                        _context.Passengers.Remove(ticket.Passenger);
+                    }
+                    if (ticket.TicketsBooking != null)
+                    {
+                        _context.Bookings.Remove(ticket.TicketsBooking);
+                    }
+                }
+            }
+
             _context.Flights.Remove(flight);
+
             try
             {
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)
             {

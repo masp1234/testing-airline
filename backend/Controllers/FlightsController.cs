@@ -90,7 +90,12 @@ namespace backend.Controllers
 		{
 			if (flightId <= 0)
 			{
-    			return BadRequest(new { message = "Invalid flightId provided." });
+				return BadRequest(new { message = "Invalid flight ID provided. Please write an ID that is positive and above 0." });
+			}
+			var flight = await _flightService.GetFlightById(flightId);
+			if (flight == null)
+			{
+    			return BadRequest(new { message = $"Invalid flight ID provided. Flight with ID: {flightId} does not exist." });
 			}
 
 			try
