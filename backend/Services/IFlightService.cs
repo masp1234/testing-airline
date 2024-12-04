@@ -15,6 +15,8 @@ namespace backend.Services
 
         Task<FlightClass?> GetFlightClassById(int id);
 
+        Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight);
+
         Task CancelFlight();
 
         Task ChangeFlight();
