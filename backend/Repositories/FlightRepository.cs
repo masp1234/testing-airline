@@ -101,31 +101,46 @@ namespace backend.Repositories
         {
             var flight = await _context.Flights
                 .Include(f => f.Tickets)
-                .ThenInclude(t => t.Passenger)
+                    .ThenInclude(t => t.Passenger)
+                .Include(f => f.Tickets)
+                    .ThenInclude(t => t.TicketsBooking)
                 .FirstOrDefaultAsync(f => f.Id == id);
+
             if (flight == null)
             {
                 return null;
             }
 
-            // Remove associated tickets, passengers and bookings
-            if (flight.Tickets != null && flight.Tickets.Any())
+            if (flight.Tickets != null && flight.Tickets.Count != 0)
             {
-                _context.Tickets.RemoveRange(flight.Tickets);
-
                 foreach (var ticket in flight.Tickets)
                 {
+                    // Remove the ticket
+                    _context.Tickets.Remove(ticket);
+
+                    // Removing related passenger if no other tickets reference it
                     if (ticket.Passenger != null)
                     {
-                        _context.Passengers.Remove(ticket.Passenger);
+                        var hasOtherTickets = await _context.Tickets.AnyAsync(t => t.PassengerId == ticket.Passenger.Id && t.Id != ticket.Id);
+                        if (!hasOtherTickets)
+                        {
+                            _context.Passengers.Remove(ticket.Passenger);
+                        }
                     }
+
+                    // Removing bookings if no other tickets reference it
                     if (ticket.TicketsBooking != null)
                     {
-                        _context.Bookings.Remove(ticket.TicketsBooking);
+                        var hasOtherTicketsForBooking = await _context.Tickets.AnyAsync(t => t.TicketsBookingId == ticket.TicketsBooking.Id && t.Id != ticket.Id);
+                        if (!hasOtherTicketsForBooking)
+                        {
+                            _context.Bookings.Remove(ticket.TicketsBooking);
+                        }
                     }
                 }
             }
 
+            // Removing flight
             _context.Flights.Remove(flight);
 
             try
@@ -134,10 +149,12 @@ namespace backend.Repositories
             }
             catch (DbUpdateException ex)
             {
-                throw new DbUpdateException("Database Error, could not delete flight", ex);
+                throw new DbUpdateException("Database Error: could not delete flight", ex);
             }
+
             return flight;
         }
+
 
         public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
         {
