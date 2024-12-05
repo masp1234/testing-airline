@@ -112,8 +112,8 @@ namespace backend.Controllers
 			}
 		}
 
-	//	[Authorize(Roles = "Admin")]
-		[HttpDelete("deleteFlight/{Id}")]
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("{Id}")]
 		public async Task<IActionResult> DeleteFlight([FromRoute] int Id)
 		{
 			var flight = await _flightService.GetFlightById(Id);
