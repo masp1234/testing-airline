@@ -101,7 +101,7 @@ namespace backend.Controllers
 		{
 			try
 			{
-				await _flightService.CancelFlight();
+			//	await _flightService.CancelFlight();
 				await _flightService.ChangeFlight();
 				return Ok(new { message = "Email(s) has been sendt regarding cancellation of flight" });
 			}
@@ -112,5 +112,26 @@ namespace backend.Controllers
 			}
 		}
 
+		[Authorize(Roles = "Admin")]
+		[HttpDelete("{Id}")]
+		public async Task<IActionResult> DeleteFlight([FromRoute] int Id)
+		{
+			var flight = await _flightService.GetFlightById(Id);
+			if (flight == null)
+			{
+    			return NotFound(new { message = $"Invalid flight ID provided. Flight with ID: {Id} does not exist." });
+			}
+
+			try
+			{
+				await _flightService.CancelFlight(Id);
+				return Ok(new {message = $"Flight with ID: {Id} was deleted successfully!" });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to delete a flight." });
+			}
+		}
 	}
 }

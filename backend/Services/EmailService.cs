@@ -2,7 +2,6 @@ using backend.Models;
 using backend.Enums;
 using MailKit.Net.Smtp;
 using MimeKit;
-using dotenv.net;
 using backend.Dtos;
 
 namespace backend.Services
@@ -61,14 +60,12 @@ namespace backend.Services
             }
         }
 
-
-
-
         public async Task SendFlightEmailAsync(List<Passenger> passengers, FlightStatus status)
         {
             if (passengers == null || passengers.Count == 0)
             {
-                throw new Exception("No passengers to send email to");
+                Console.WriteLine("No passengers to send emails to.");
+                return;
             }
 
             // Define the message subject and body template based on status

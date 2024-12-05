@@ -108,6 +108,64 @@ namespace backend.Repositories
             return flight;
         }
 
+        public async Task<Flight> Delete(int id)
+        {
+            var transaction = _context.Database.BeginTransaction();
+
+            var flight = await _context.Flights
+                .Include(f => f.Tickets)
+                    .ThenInclude(t => t.Passenger)
+                .Include(f => f.Tickets)
+                    .ThenInclude(t => t.TicketsBooking)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (flight == null)
+            {
+                return null;
+            }
+
+            if (flight.Tickets != null && flight.Tickets.Count != 0)
+            {
+                foreach (var ticket in flight.Tickets)
+                {
+                    // Remove the ticket
+                    _context.Tickets.Remove(ticket);
+
+                    // Removing related passenger
+                    if (ticket.Passenger != null)
+                    {
+                         _context.Passengers.Remove(ticket.Passenger);
+                    }
+
+                    // Removing bookings if no other tickets reference it
+                    if (ticket.TicketsBooking != null)
+                    {
+                        var hasOtherTicketsForBooking = await _context.Tickets.AnyAsync(t => t.TicketsBookingId == ticket.TicketsBooking.Id && t.Id != ticket.Id);
+                        if (!hasOtherTicketsForBooking)
+                        {
+                            _context.Bookings.Remove(ticket.TicketsBooking);
+                        }
+                    }
+                }
+            }
+
+            // Removing flight
+            _context.Flights.Remove(flight);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+                throw new DbUpdateException("Database Error: could not delete flight", ex);
+            }
+
+
+            return flight;
+        }
 
 
         public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)

@@ -115,11 +115,23 @@ namespace backend.Services
             return flightClass;
         }
 
-        // Dummy methods to simulate a change and cancel in flight to test email sending. Delete/Refactor later.
-        public async Task CancelFlight()
+        public async Task CancelFlight(int flightId)
         {
-            var dummyPassenger = new List<Passenger> { new() { Email = "" } };
-            await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Cancelled);
+            var deletedFlight = await _flightRepository.Delete(flightId);
+            if (deletedFlight == null)
+            {
+                throw new Exception("Flight could not be found."); // Could potentially define more specific exceptions (EntityNotfoundException)
+            }
+            var passengers = deletedFlight.Tickets.Select(ticket => ticket.Passenger).ToList();
+            try
+            {
+                await _emailService.SendFlightEmailAsync(passengers, FlightStatus.Cancelled);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw new Exception("An error occured while trying to send email to passengers regarding cancellation of flight.");
+            }
         }
         public async Task ChangeFlight()
         {
