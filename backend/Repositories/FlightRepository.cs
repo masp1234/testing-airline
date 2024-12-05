@@ -110,6 +110,8 @@ namespace backend.Repositories
 
         public async Task<Flight> Delete(int id)
         {
+            var transaction = _context.Database.BeginTransaction();
+
             var flight = await _context.Flights
                 .Include(f => f.Tickets)
                     .ThenInclude(t => t.Passenger)
@@ -129,14 +131,10 @@ namespace backend.Repositories
                     // Remove the ticket
                     _context.Tickets.Remove(ticket);
 
-                    // Removing related passenger if no other tickets reference it
+                    // Removing related passenger
                     if (ticket.Passenger != null)
                     {
-                        var hasOtherTickets = await _context.Tickets.AnyAsync(t => t.PassengerId == ticket.Passenger.Id && t.Id != ticket.Id);
-                        if (!hasOtherTickets)
-                        {
-                            _context.Passengers.Remove(ticket.Passenger);
-                        }
+                         _context.Passengers.Remove(ticket.Passenger);
                     }
 
                     // Removing bookings if no other tickets reference it
@@ -157,11 +155,14 @@ namespace backend.Repositories
             try
             {
                 await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
             catch (DbUpdateException ex)
             {
+                await transaction.RollbackAsync();
                 throw new DbUpdateException("Database Error: could not delete flight", ex);
             }
+
 
             return flight;
         }

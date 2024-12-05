@@ -113,23 +113,19 @@ namespace backend.Controllers
 		}
 
 	//	[Authorize(Roles = "Admin")]
-		[HttpDelete("deleteFlight")]
-		public async Task<IActionResult> DeleteFlight([FromQuery] int flightId)
+		[HttpDelete("deleteFlight/{Id}")]
+		public async Task<IActionResult> DeleteFlight([FromRoute] int Id)
 		{
-			if (flightId <= 0)
-			{
-				return BadRequest(new { message = "Invalid flight ID provided. Please write an ID that is positive and above 0." });
-			}
-			var flight = await _flightService.GetFlightById(flightId);
+			var flight = await _flightService.GetFlightById(Id);
 			if (flight == null)
 			{
-    			return BadRequest(new { message = $"Invalid flight ID provided. Flight with ID: {flightId} does not exist." });
+    			return NotFound(new { message = $"Invalid flight ID provided. Flight with ID: {Id} does not exist." });
 			}
 
 			try
 			{
-				await _flightService.CancelFlight(flightId);
-				return Ok(new {message = $"Flight with ID: {flightId} was deleted successfully!" });
+				await _flightService.CancelFlight(Id);
+				return Ok(new {message = $"Flight with ID: {Id} was deleted successfully!" });
 			}
 			catch (Exception ex)
 			{
