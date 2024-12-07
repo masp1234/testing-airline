@@ -12,13 +12,9 @@ namespace backend.Services
         Task<FlightResponse?> GetFlightWithRelationshipsById(int id);
         Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest);
         Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate);
-
         Task<FlightClass?> GetFlightClassById(int id);
-
         Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight);
-
-        Task CancelFlight();
-
+        Task CancelFlight(int id);
         Task ChangeFlight();
     }
 }
