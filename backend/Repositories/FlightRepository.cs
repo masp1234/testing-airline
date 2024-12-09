@@ -197,5 +197,38 @@ namespace backend.Repositories
             var flightClass = await _context.FlightClasses.FindAsync(id);
             return flightClass;
         }
+
+        public async Task<List<Ticket>> GetTicketsByFlightId(int flightId)
+        {
+            var tickets = await _context.Tickets.Where(ticket => ticket.FlightId == flightId)
+                .Include(ticket => ticket.Passenger)
+                .ToListAsync();
+            return tickets;
+        }
+
+        public async Task<bool> UpdateFlight(Flight flightToUpdate)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var overLappingFlights = await GetFlightsByAirplaneIdAndTimeInterval(flightToUpdate);
+
+                if (overLappingFlights.Any(flight => flight.Id != flightToUpdate.Id))
+                {
+                    throw new Exception("Update denied, there were overlapping flights");
+                }
+                _context.Flights.Update(flightToUpdate);
+                await _context.SaveChangesAsync();
+                await _context.Database.CommitTransactionAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
     }
 }

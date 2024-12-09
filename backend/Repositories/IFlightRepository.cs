@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos;
+using backend.Models;
 
 namespace backend.Repositories
 
@@ -19,5 +20,8 @@ namespace backend.Repositories
         Task<List<Flight>> GetFlightsByAirplaneId(int airplaneId);
 
         Task<FlightClass?> GetFlightClassById(int id);
+
+        Task<List<Ticket>> GetTicketsByFlightId(int id);
+        Task<bool> UpdateFlight(Flight flight);
     }
 }

@@ -44,7 +44,7 @@ namespace backend.Controllers
 			{
 				Console.WriteLine(ex);
 				SentrySdk.CaptureException(ex);
-				return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occured while trying to get flight with ID {id}." });
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occured while trying to get existingFlight with ID {id}." });
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace backend.Controllers
 			{
 				Console.WriteLine(ex);
 				SentrySdk.CaptureException(ex);
-				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create a new flight." });
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to create the new flight." });
 			}
 		}
 
@@ -89,10 +89,29 @@ namespace backend.Controllers
 		[HttpPatch("{id}")]
 		public async Task<IActionResult> UpdateFlight([FromBody]UpdateFlightRequest updateFlightRequest, int id)
 		{
-			Console.WriteLine(updateFlightRequest.DepartureDateTime);
-			Console.WriteLine(id);
-			return Ok(updateFlightRequest.DepartureDateTime);
-		}
+			try
+			{
+                Console.WriteLine(updateFlightRequest.DepartureDateTime);
+                var existingFlight = await _flightService.GetFlightById(id);
+                if (existingFlight == null)
+                {
+                    return NotFound(new { message = $"No flight with ID '{id}' was found." });
+                }
+                bool updatedSuccessfully = await _flightService.UpdateFlight(updateFlightRequest, existingFlight);
+				if (!updatedSuccessfully)
+				{
+					return Conflict(new { message = $"Could not the update flight because there were conflicting flight schedules." });
+				}
+                return Ok(new { message = "The flight was updated successfully." });
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                SentrySdk.CaptureException(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to update flight." });
+            }
+        }
 
         // Dummy endpoint to test email sending
         // Sends both the 'cancellation' and 'change' email
@@ -103,12 +122,12 @@ namespace backend.Controllers
 			{
 			//	await _flightService.CancelFlight();
 				await _flightService.ChangeFlight();
-				return Ok(new { message = "Email(s) has been sendt regarding cancellation of flight" });
+				return Ok(new { message = "Email(s) has been sendt regarding cancellation of existingFlight." });
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine(ex);
-				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to cancel flight." });
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to cancel existingFlight." });
 			}
 		}
 

@@ -51,7 +51,7 @@ namespace backend.Services
             var airplane = await _airplaneService.GetAirplaneById(flightCreationRequest.AirplaneId);
             if (airplane == null)
             {
-                throw new InvalidDataException("The chosen airplane could not be found");
+                throw new InvalidDataException("The chosen airplane could not be found.");
             }
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
             flight.FlightCode = "123FLIGHTCODE";
@@ -63,9 +63,8 @@ namespace backend.Services
             }
             (int distance, int duration) = await GetDistanceAndTravelTime(originAirport.Name, arrivalAirport.Name);
             flight.Kilometers = distance;
-            flight.TravelTime = (int)duration;
-            // the 120 literal value below is meant to simulate preparation time in minutes between when an airplane lands at an airport, and when it is ready to fly again.
-            flight.CompletionTime = flight.DepartureTime.AddMinutes(duration + 120);
+            flight.TravelTime = duration;
+            flight.CompletionTime = CalculateFlightCompletionTime(flight.DepartureTime, flight.TravelTime);
 
             var overLappingFlights = await _flightRepository.GetFlightsByAirplaneIdAndTimeInterval(flight);
             if (overLappingFlights.Count > 0)
@@ -109,12 +108,36 @@ namespace backend.Services
 
         }
 
+        private DateTime CalculateFlightCompletionTime(DateTime departureTime, int flightDurationInMinutes)
+        {
+            // the ´variable below is meant to simulate preparation time in minutes between when an airplane lands at an airport, and when it is ready to fly again.
+            int simulatedPreparationTimeInMinutes = 120;
+            return departureTime.AddMinutes(flightDurationInMinutes + simulatedPreparationTimeInMinutes);
+        }
+
         public async Task<FlightClass?> GetFlightClassById(int id)
         {
             var flightClass = await _flightRepository.GetFlightClassById(id);
             return flightClass;
         }
 
+        public async Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight)
+        {
+            flight.DepartureTime = updateFlightRequest.DepartureDateTime;
+            flight.CompletionTime = CalculateFlightCompletionTime(flight.DepartureTime, flight.TravelTime);
+            bool updatedSuccessfully = await _flightRepository.UpdateFlight(flight);
+            if (updatedSuccessfully)
+            {
+                var flightTickets = await _flightRepository.GetTicketsByFlightId(flight.Id);
+                var flightPassengers = flightTickets
+                    .Select(ticket => ticket.Passenger)
+                    .ToList();
+                await _emailService.SendFlightEmailAsync(flightPassengers, FlightStatus.Changed);
+                return true;
+            }
+            return false;
+        }
+        
         public async Task CancelFlight(int flightId)
         {
             var deletedFlight = await _flightRepository.Delete(flightId);
@@ -133,6 +156,7 @@ namespace backend.Services
                 throw new Exception("An error occured while trying to send email to passengers regarding cancellation of flight.");
             }
         }
+        
         public async Task ChangeFlight()
         {
             var dummyPassenger = new List<Passenger> { new() { Email = "" } };
