@@ -91,7 +91,7 @@ namespace backend.Controllers
 			return Unauthorized();
 		}
 		
-		[Authorize(Roles = "Admin, User")]
+		[Authorize(Roles = "Admin, Customer")]
 		[HttpPost("logout")]
 		public IActionResult Logout()
 		{

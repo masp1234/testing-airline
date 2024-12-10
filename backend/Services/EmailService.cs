@@ -13,8 +13,8 @@ namespace backend.Services
 
         public EmailService()
         {
-            _emailSender = Environment.GetEnvironmentVariable("SENDER_EMAIL") ?? throw new Exception("SENDER_EMAIL environment variable not set.");
-            _emailPassword = Environment.GetEnvironmentVariable("SENDER_PASSWORD") ?? throw new Exception("SENDER_PASSWORD environment variable not set.");
+            _emailSender = Environment.GetEnvironmentVariable("SENDER_EMAIL") ?? "";
+            _emailPassword = Environment.GetEnvironmentVariable("SENDER_PASSWORD") ?? "";
         }
 
         public async Task SendBookingConfirmationMail(BookingProcessedRequest bookingProcessedRequest)
