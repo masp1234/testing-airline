@@ -79,7 +79,7 @@ namespace backend
 					ValidateIssuerSigningKey = true,
 					ValidIssuer = Environment.GetEnvironmentVariable("Issuer"),
 					ValidAudience = Environment.GetEnvironmentVariable("Audience"),
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey")))
+					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWTSecretKey") ?? ""))
 				};
 
 				options.Events = new JwtBearerEvents

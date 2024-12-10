@@ -81,7 +81,7 @@ namespace backend.Controllers
 					{
 						HttpOnly = true,
 						Secure = true, // Ensure this is set to false when using localhost
-						SameSite = SameSiteMode.Strict,
+						SameSite = SameSiteMode.None,
 					});
 					// Return response message and user role from token
 					return Ok(new { message = "Login successful.", role = user.Role, email = user.Email });
@@ -100,7 +100,7 @@ namespace backend.Controllers
 				Expires = DateTime.Now.AddDays(-1), // Set to a past date to expire the cookie
 				HttpOnly = true,
 				Secure = false, // Ensure this is set to false when using localhost
-				SameSite = SameSiteMode.Strict
+				SameSite = SameSiteMode.None
 			});
 
 			return Ok(new { message = "Logout successful." });
