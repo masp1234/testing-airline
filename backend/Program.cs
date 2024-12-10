@@ -48,7 +48,7 @@ namespace backend
 
 			builder.Services.AddCors(options =>
 			{
-				options.AddPolicy("VercelPolicy",
+				options.AddDefaultPolicy(
 					policy =>
 					{
 						policy.WithOrigins(Environment.GetEnvironmentVariable("CLIENT_URL") ?? "http://localhost:5173")
@@ -149,7 +149,7 @@ namespace backend
 				app.UseSwaggerUI();
 			}
 
-			app.UseCors("VercelPolicy");
+			app.UseCors();
 
 			app.UseHttpsRedirection();
 			app.UseCookiePolicy(new CookiePolicyOptions
