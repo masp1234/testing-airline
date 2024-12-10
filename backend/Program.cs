@@ -26,7 +26,7 @@ namespace backend
 	  builder.WebHost.UseSentry(options =>
 			{
 				options.TracesSampleRate = 0.5;
-				options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN");
+				options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN") ?? "";
 				options.MaxRequestBodySize = RequestSize.Medium;
 				options.MinimumBreadcrumbLevel = LogLevel.Debug;
 				options.AttachStacktrace = true;
