@@ -2,18 +2,38 @@
 using backend.Dtos;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using backend.Config;
+using AutoMapper;
 namespace backend.Repositories
 {
-    public class BookingRepository(DatabaseContext context) : IBookingRepository
+    public class BookingRepository : IBookingRepository
     {
+        private readonly IMapper _mapper;
+        private readonly DatabaseContext _context;
+        public BookingRepository(DatabaseContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
         public async Task<List<Booking>> GetBookingsByUserId(int id)
         {
             var bookings = await _context.Bookings
                 .Where(booking => booking.UserId == id)
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.Passenger)
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.Flight)
+                        .ThenInclude(f => f.DeparturePortNavigation)
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.Flight)                            
+                        .ThenInclude(f => f.ArrivalPortNavigation)
+                .Include(b => b.Tickets)
+                    .ThenInclude(t => t.FlightClass)
                 .ToListAsync();
+
             return bookings;
         }
-        private readonly DatabaseContext _context = context;
+
         public async Task<Booking> CreateBooking(BookingProcessedRequest request)
         {
             var transaction = _context.Database.BeginTransaction();
@@ -48,7 +68,7 @@ namespace backend.Repositories
                         TicketsBookingId = createdBooking.Entity.Id
                     });
 
-                    var flight = await context.Flights.FindAsync(ticket.FlightId);
+                    var flight = await _context.Flights.FindAsync(ticket.FlightId);
                     flight?.DecrementSeatAvailability(ticket.FlightClassName);
                 }
 

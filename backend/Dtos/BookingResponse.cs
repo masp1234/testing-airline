@@ -9,5 +9,7 @@ namespace backend.Dtos
         public string ConfirmationNumber { get; set; } = null!;
 
         public int UserId { get; set; }
+
+        public List<TicketResponse> Tickets { get; set; } = new();
     }
 }
