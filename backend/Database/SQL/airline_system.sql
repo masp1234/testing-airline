@@ -134,6 +134,8 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   INDEX `arrival_port_idx` (`arrival_port` ASC) VISIBLE,
   INDEX `flights_airline_id_idx` (`flights_airline_id` ASC) VISIBLE,
   INDEX `flights_airplane_id` (`flights_airplane_id` ASC) VISIBLE,
+  INDEX `departure_time_idx` (`departure_time` ASC) VISIBLE,
+  INDEX `departure_completion_idx` (`departure_time` ASC, `completion_time` ASC) VISIBLE,
   CONSTRAINT `arrival_port`
     FOREIGN KEY (`arrival_port`)
     REFERENCES `airline_project`.`airports` (`id`),
