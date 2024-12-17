@@ -37,6 +37,7 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = "An error occured while trying to get bookings." });
             }
         }
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreationRequest bookingCreationRequest)
         {
