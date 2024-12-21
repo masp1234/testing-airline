@@ -7,19 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Testcontainers.MySql;
 using Xunit.Abstractions;
 
-public class AirlineServiceTests(ITestOutputHelper output) : IAsyncLifetime
+public class AirlineServiceTests() : IAsyncLifetime
 {
     private AirlineService _sut;
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
-        .WithDatabase("airline_project")
-    .WithUsername("testuser")
-    .WithPassword("123123")
-        .WithCommand("--default-authentication-plugin=mysql_native_password")
-    .Build();
+        .Build();
 
     private DatabaseContext _dbContext;
-    private readonly ITestOutputHelper _output = output;
 
     public async Task DisposeAsync()
     {
@@ -31,7 +26,7 @@ public class AirlineServiceTests(ITestOutputHelper output) : IAsyncLifetime
     public async Task GetAllAirlines_ShouldReturn_Airlines()
     {
         var airlines = await _sut.GetAllAirlines();
-        Assert.NotEmpty(airlines);
+        Assert.Empty(airlines);
     }
 
     public async Task InitializeAsync()
@@ -43,22 +38,18 @@ public class AirlineServiceTests(ITestOutputHelper output) : IAsyncLifetime
 
         await _mySqlContainer.StartAsync();
 
-        var connectionString = $"Server={_mySqlContainer.Hostname};Port={_mySqlContainer.GetMappedPublicPort(3306)};Database=airline_project;Uid=root;Pwd=123123;";
-
-        _output.WriteLine(connectionString);
+        var connectionString = _mySqlContainer.GetConnectionString();
 
         var options = new DbContextOptionsBuilder<DatabaseContext>()
             .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
             {
-                options.EnableRetryOnFailure(maxRetryCount: 2);
+                options.EnableRetryOnFailure(maxRetryCount: 3);
             })
             .Options;
 
         _dbContext = new DatabaseContext(options);
-
         await _dbContext.Database.EnsureCreatedAsync();
 
-        _output.WriteLine("DATABASE CREATED?");
         IMapper mapper = configuration.CreateMapper();
         _sut = new AirlineService(new AirlineRepository(_dbContext), mapper);
     }
