@@ -23,6 +23,8 @@ public class AirlineServiceTests: IClassFixture<TestDatabaseFixture>
 
         IMapper mapper = configuration.CreateMapper();
         _sut = new AirlineService(new AirlineRepository(_dbFixture.DbContext), mapper);
+
+        _dbFixture.ResetDatabase();
     }
 
     [Fact]
@@ -37,5 +39,14 @@ public class AirlineServiceTests: IClassFixture<TestDatabaseFixture>
 
         // Assert
         Assert.NotEmpty(airlines);
+    }
+
+    [Fact]
+    public async Task GetAllAirlines_ShouldReturnEmptyList_WhenNoAirlinesFound()
+    {
+        var airlines = await _sut.GetAllAirlines();
+
+        // Assert
+        Assert.Empty(airlines);
     }
 }

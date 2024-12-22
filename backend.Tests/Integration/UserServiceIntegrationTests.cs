@@ -19,6 +19,13 @@ namespace backend.Tests.Integration
             Password = "123123"
         };
 
+        private readonly LoginRequest loginRequest = new()
+        {
+            Email = "test@email.com",
+            Role = "Customer",
+            Password = "123123"
+        };
+
         public UserServiceIntegrationTests(TestDatabaseFixture dbFixture) {
             _dbFixture = dbFixture;
             var passwordHasher = new PasswordHasher<User>();
@@ -30,11 +37,34 @@ namespace backend.Tests.Integration
             IMapper mapper = configuration.CreateMapper();
             _sut = new UserService(new UserRepository(_dbFixture.DbContext), passwordHasher, mapper);
             _dbFixture.ResetDatabase();
-            _dbFixture.DbContext.ChangeTracker.Clear();
 
+            // The double .Clear() of the ChangeTracker is so that every test gets a "fresh" context to work with.
+            // If this is not done, there will be errors because of the tracked entities
+            _dbFixture.DbContext.ChangeTracker.Clear();
             _dbFixture.DbContext.Users.Add(_existingUser);
             _dbFixture.DbContext.SaveChanges();
             _dbFixture.DbContext.ChangeTracker.Clear();
+        }
+
+        [Fact]
+        public async Task GetUsers_ShouldReturnListOfUsers()
+        {
+            var users = await _sut.GetUsers();
+            Assert.Single(users);
+        }
+
+        [Fact]
+        public async Task GetUsers_ShouldReturnEmptyList_When_NoUsersFound()
+        {
+            // Arrange
+            _dbFixture.DbContext.Users.Remove(_existingUser);
+            await _dbFixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var users = await _sut.GetUsers();
+
+            // Assert
+            Assert.Empty(users);
         }
 
         [Fact]
@@ -121,12 +151,6 @@ namespace backend.Tests.Integration
         [Fact]
         public void CheckPasswordValidation_ShouldReturnTrue_When_PasswordsMatch()
         {
-            JwtRequest loginRequest = new()
-            {
-                Email = "test@email.com",
-                Role = "Customer",
-                Password = "123123"
-            };
             string matchingHashedPassword = "AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==";
             bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, matchingHashedPassword, loginRequest);
             Assert.True(validPassword);
@@ -135,17 +159,26 @@ namespace backend.Tests.Integration
         [Fact]
         public void CheckPasswordValidation_ShouldReturnFalse_When_PasswordsDoNotMatch()
         {
-            JwtRequest loginRequest = new()
-            {
-                Email = "test@email.com",
-                Role = "Customer",
-                Password = "123123"
-            };
-
             string hashedPasswordThatDoesNotMatch = "AQAAAAIAAYagAAAAEC6cop1QHZMe9j5x/K/OSHYPJssLCfc26kVDdigke13RVwqlNlgsGqbXKShhxdaScQ==";
 
             bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, hashedPasswordThatDoesNotMatch, loginRequest);
             Assert.False(validPassword);
+        }
+
+        [Fact]
+        public void GenerateJwtToken_ShouldReturnToken_When_ValidEnvironmentVariables()
+        {
+            Environment.SetEnvironmentVariable("JWTSecretKey", "123123123123123123123123123123123123123123123123");
+            Environment.SetEnvironmentVariable("Issuer", "Issuer");
+            Environment.SetEnvironmentVariable("Audience", "Audience");
+            var token = _sut.GenerateJwtToken(loginRequest);
+            Assert.NotNull(token);
+        }
+
+        [Fact]
+        public void GenerateJwtToken_ShouldThrowException_When_MissingEnvironmentVariables()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
         }
     }
 }
