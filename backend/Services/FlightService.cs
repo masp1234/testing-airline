@@ -29,13 +29,13 @@ namespace backend.Services
             return mappedFlights;
         }
 
-        public async Task<Flight?> GetFlightById(int id)
+        public async Task<Flight?> GetFlightById(long id)
         {
             var flight = await _flightRepository.GetFlightById(id);
             return flight;
         }
 
-        public async Task<FlightResponse?> GetFlightWithRelationshipsById(int id)
+        public async Task<FlightResponse?> GetFlightWithRelationshipsById(long id)
         {
             var flight = await _flightRepository.GetFlightWithRelationshipsById(id);
             var mappedFlight = _mapper.Map<FlightResponse>(flight);
@@ -81,7 +81,7 @@ namespace backend.Services
 
         }
 
-        public async Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
+        public async Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(long departureAirportId, long destinationAirportId, DateOnly departureDate)
         {
             var flights = await _flightRepository.GetFlightsByDepartureDestinationAndDepartureDate(departureAirportId, destinationAirportId, departureDate);
             var mappedFlights = _mapper.Map<List<FlightResponse>>(flights);
@@ -115,7 +115,7 @@ namespace backend.Services
             return departureTime.AddMinutes(flightDurationInMinutes + simulatedPreparationTimeInMinutes);
         }
 
-        public async Task<FlightClass?> GetFlightClassById(int id)
+        public async Task<FlightClass?> GetFlightClassById(long id)
         {
             var flightClass = await _flightRepository.GetFlightClassById(id);
             return flightClass;
@@ -124,6 +124,7 @@ namespace backend.Services
         public async Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight)
         {
             flight.DepartureTime = updateFlightRequest.DepartureDateTime;
+            flight.UpdatedBy = updateFlightRequest?.UpdatedBy;
             flight.CompletionTime = CalculateFlightCompletionTime(flight.DepartureTime, flight.TravelTime);
             bool updatedSuccessfully = await _flightRepository.UpdateFlight(flight);
             if (updatedSuccessfully)
@@ -138,9 +139,9 @@ namespace backend.Services
             return false;
         }
         
-        public async Task CancelFlight(int flightId)
+        public async Task CancelFlight(long flightId, string canceledBy)
         {
-            var deletedFlight = await _flightRepository.Delete(flightId);
+            var deletedFlight = await _flightRepository.Delete(flightId, canceledBy);
             if (deletedFlight == null)
             {
                 throw new Exception("Flight could not be found."); // Could potentially define more specific exceptions (EntityNotfoundException)

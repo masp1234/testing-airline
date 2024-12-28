@@ -7,7 +7,7 @@ namespace backend.Services
     {
         Task<List<UserResponse>> GetUsers();
 
-        Task<User?> GetUserById(int id);
+        Task<User?> GetUserById(long id);
 
         Task<UserResponse?> GetUserByEmail(string email);
         Task<JwtRequest?> CheckUserByEmail(string email);

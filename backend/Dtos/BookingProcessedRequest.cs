@@ -5,7 +5,7 @@ namespace backend.Dtos
     {
         public string Email { get; set; }
 
-        public int UserId { get; set; }
+        public long UserId { get; set; }
 
         public string ConfirmationNumber { get; set; }
 
@@ -16,9 +16,9 @@ namespace backend.Dtos
     {
         public PassengerCreationRequest Passenger { get; set; }
 
-        public int FlightId { get; set; }
+        public long FlightId { get; set; }
 
-        public int FlightClassId { get; set; }
+        public long FlightClassId { get; set; }
 
         public decimal FlightPrice { get; set; }
 

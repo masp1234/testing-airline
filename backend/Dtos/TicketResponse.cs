@@ -2,9 +2,7 @@ using System.Globalization;
 
 public class TicketResponse {
 
-//    public int Id {get; set;}
-
-	public decimal Price {get; set;}
+    public decimal Price {get; set;}
 	public string TicketNumber {get; set;}
 	public string FlightCode { get; set; } = null!;
 	public string DeparturePortName { get; set; } = null!;

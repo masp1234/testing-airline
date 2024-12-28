@@ -185,6 +185,11 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.TravelTime).HasColumnName("travel_time");
             entity.Property(e => e.IdempotencyKey).HasColumnName("idempotency_key");
 
+            entity.Property(e => e.CreatedBy).HasColumnName("created_by");
+            entity.Property(e => e.UpdatedBy).HasColumnName("updated_by");
+            entity.Property(e => e.Version).HasColumnName("version");
+
+
             entity.HasOne(d => d.ArrivalPortNavigation).WithMany(p => p.FlightArrivalPortNavigations)
                 .HasForeignKey(d => d.ArrivalPort)
                 .OnDelete(DeleteBehavior.ClientSetNull)

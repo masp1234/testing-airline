@@ -5,7 +5,7 @@ namespace backend.Models;
 
 public partial class FlightClass
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public FlightClassName Name { get; set; }
 

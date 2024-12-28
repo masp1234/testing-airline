@@ -66,6 +66,7 @@ INSERT INTO `airline_project`.`airports` (`name`, `code`, `city_id`) VALUES
 -- Sample data for `users`
 INSERT INTO `airline_project`.`users` (`email`, `password`, `role`) VALUES
 ('admin@example.com', 'AQAAAAIAAYagAAAAECrPK/OaPJ1TtlTl0to+E6f86of8ocaDjTNDunN9fPPlIpFUd787gRpL2lusp8srkg==', 'Admin'),
+('admin2@example.com', 'AQAAAAIAAYagAAAAECrPK/OaPJ1TtlTl0to+E6f86of8ocaDjTNDunN9fPPlIpFUd787gRpL2lusp8srkg==', 'Admin'),
 ('customer@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
 ('customer2@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
 ('customer3@example.com', 'AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==', 'Customer'),
@@ -93,22 +94,26 @@ INSERT INTO `airline_project`.`flight_classes` (`name`, `price_multiplier`) VALU
 
 -- Sample data for `flights`
 INSERT INTO `airline_project`.`flights` 
-(`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `completion_time`, `price`, `kilometers`, `economy_class_seats_available`, `business_class_seats_available`, `first_class_seats_available`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`) 
+(`flight_code`, `departure_port`, `arrival_port`, `departure_time`, `travel_time`, `completion_time`, `price`, `kilometers`, `economy_class_seats_available`, `business_class_seats_available`, `first_class_seats_available`, `flights_airline_id`, `flights_airplane_id`, `idempotency_key`, `created_by`, `updated_by`) 
 VALUES
-('DL100', 1, 2, '2024-12-24 08:00:00', 360, '2024-12-24 16:00:00', 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL100'),
-('DL101', 1, 2, '2024-12-24 09:30:00', 360, '2024-12-24 17:30:00', 199.99, 450, 150, 20, 5, 1, 2, 'TEST_DL101'),
-('DL102', 1, 2, '2024-12-24 11:30:00', 360, '2024-12-24 19:30:00', 199.99, 450, 150, 20, 5, 1, 3, 'TEST_DL102'),
-('DL103', 1, 2, '2024-12-24 13:30:00', 360, '2024-12-24 21:30:00', 199.99, 450, 150, 20, 5, 1, 4, 'TEST_DL103'),
-('DL104', 1, 2, '2024-12-24 13:45:00', 360, '2024-12-24 21:45:00', 199.99, 450, 150, 20, 5, 1, 5, 'TEST_DL104'),
-('DL105', 1, 2, '2024-12-24 14:30:00', 360, '2024-12-24 22:30:00', 199.99, 450, 150, 20, 5, 1, 6, 'TEST_DL105'),
-('DL106', 1, 2, '2024-12-24 14:45:00', 360, '2024-12-24 22:45:00', 199.99, 450, 150, 20, 5, 1, 7, 'TEST_DL106'),
-('DL107', 2, 1, '2025-01-02 08:00:00', 360, '2025-01-02 16:00:00', 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL107'),
-('DL108', 2, 1, '2025-01-02 09:30:00', 360, '2025-01-02 17:30:00', 199.99, 450, 150, 20, 5, 1, 2, 'TEST_DL108'),
-('DL109', 2, 1, '2025-01-02 11:30:00', 360, '2025-01-02 19:30:00', 199.99, 450, 150, 20, 5, 1, 3, 'TEST_DL109'),
-('DL110', 2, 1, '2025-01-02 13:30:00', 360, '2025-01-02 21:30:00', 199.99, 450, 150, 20, 5, 1, 4, 'TEST_DL110'),
-('DL111', 2, 1, '2025-01-02 13:45:00', 360, '2025-01-02 21:45:00', 199.99, 450, 150, 20, 5, 1, 5, 'TEST_DL111'),
-('DL112', 2, 1, '2025-01-02 14:30:00', 360, '2025-01-02 22:30:00', 199.99, 450, 150, 20, 5, 1, 6, 'TEST_DL112'),
-('DL113', 2, 1, '2025-01-02 14:45:00', 360, '2025-01-02 22:45:00', 199.99, 450, 150, 20, 5, 1, 7, 'TEST_DL113');
+('DL096', 1, 2, '2024-12-24 02:30:00', 360, '2024-12-24 10:30:00', 199.99, 450, 150, 20, 5, 1, 5, 'TEST_DL096', "test@gmail.com", "test@gmail.com"),
+('DL097', 1, 2, '2024-12-24 07:30:00', 360, '2024-12-24 15:30:00', 199.99, 450, 150, 20, 5, 1, 10, 'TEST_DL097', "test@gmail.com", "test@gmail.com"),
+('DL098', 1, 2, '2024-12-24 08:00:00', 360, '2024-12-24 16:00:00', 199.99, 450, 150, 20, 5, 1, 8, 'TEST_DL098', "test@gmail.com", "test@gmail.com"),
+('DL099', 1, 2, '2024-12-24 08:00:00', 360, '2024-12-24 16:00:00', 199.99, 450, 150, 20, 5, 1, 9, 'TEST_DL099', "test@gmail.com", "test@gmail.com"),
+('DL100', 1, 2, '2024-12-24 08:00:00', 360, '2024-12-24 16:00:00', 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL100', "test@gmail.com", "test@gmail.com"),
+('DL101', 1, 2, '2024-12-24 09:30:00', 360, '2024-12-24 17:30:00', 199.99, 450, 150, 20, 5, 1, 2, 'TEST_DL101', "test@gmail.com", "test@gmail.com"),
+('DL102', 1, 2, '2024-12-24 11:30:00', 360, '2024-12-24 19:30:00', 199.99, 450, 150, 20, 5, 1, 3, 'TEST_DL102', "test@gmail.com", "test@gmail.com"),
+('DL103', 1, 2, '2024-12-24 13:30:00', 360, '2024-12-24 21:30:00', 199.99, 450, 150, 20, 5, 1, 4, 'TEST_DL103', "test@gmail.com", "test@gmail.com"),
+('DL104', 1, 2, '2024-12-24 13:45:00', 360, '2024-12-24 21:45:00', 199.99, 450, 150, 20, 5, 1, 5, 'TEST_DL104', "test@gmail.com", "test@gmail.com"),
+('DL105', 1, 2, '2024-12-24 14:30:00', 360, '2024-12-24 22:30:00', 199.99, 450, 150, 20, 5, 1, 6, 'TEST_DL105', "test@gmail.com", "test@gmail.com"),
+('DL106', 1, 2, '2024-12-24 14:45:00', 360, '2024-12-24 22:45:00', 199.99, 450, 150, 20, 5, 1, 7, 'TEST_DL106', "test@gmail.com", "test@gmail.com"),
+('DL107', 2, 1, '2025-01-02 08:00:00', 360, '2025-01-02 16:00:00', 199.99, 450, 150, 20, 5, 1, 1, 'TEST_DL107', "test@gmail.com", "test@gmail.com"),
+('DL108', 2, 1, '2025-01-02 09:30:00', 360, '2025-01-02 17:30:00', 199.99, 450, 150, 20, 5, 1, 2, 'TEST_DL108', "test@gmail.com", "test@gmail.com"),
+('DL109', 2, 1, '2025-01-02 11:30:00', 360, '2025-01-02 19:30:00', 199.99, 450, 150, 20, 5, 1, 3, 'TEST_DL109', "test@gmail.com", "test@gmail.com"),
+('DL110', 2, 1, '2025-01-02 13:30:00', 360, '2025-01-02 21:30:00', 199.99, 450, 150, 20, 5, 1, 4, 'TEST_DL110', "test@gmail.com", "test@gmail.com"),
+('DL111', 2, 1, '2025-01-02 13:45:00', 360, '2025-01-02 21:45:00', 199.99, 450, 150, 20, 5, 1, 5, 'TEST_DL111', "test@gmail.com", "test@gmail.com"),
+('DL112', 2, 1, '2025-01-02 14:30:00', 360, '2025-01-02 22:30:00', 199.99, 450, 150, 20, 5, 1, 6, 'TEST_DL112', "test@gmail.com", "test@gmail.com"),
+('DL113', 2, 1, '2025-01-02 14:45:00', 360, '2025-01-02 22:45:00', 199.99, 450, 150, 20, 5, 1, 7, 'TEST_DL113', "test@gmail.com", "test@gmail.com");
 
 -- Sample data for `passengers`
 INSERT INTO `airline_project`.`passengers` (`first_name`, `last_name`, `email`) VALUES

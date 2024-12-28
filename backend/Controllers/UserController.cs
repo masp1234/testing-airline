@@ -1,13 +1,11 @@
 ﻿using backend.Dtos;
 using backend.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("/api/mysql/[controller]")]
 	public class UsersController : ControllerBase
 	{
@@ -16,6 +14,7 @@ namespace backend.Controllers
 		{
 			_userService = userService;
 		}
+		[Authorize(Roles = "Admin")]
 		[HttpGet]
 		public async Task<IActionResult> GetUsers()
 		{

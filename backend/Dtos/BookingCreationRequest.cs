@@ -16,8 +16,8 @@ namespace backend.Dtos
     {
         public PassengerCreationRequest Passenger { get; set; }
 
-        public int FlightId { get; set; }
+        public long FlightId { get; set; }
 
-        public int FlightClassId { get; set; }
+        public long FlightClassId { get; set; }
     }
 }
