@@ -425,11 +425,12 @@ public class FlightNeo4jRepository(IGraphClient graphClient, IMapper mapper): IF
         // Update the flight
         await _graphClient.Cypher
             .Match("(flight:Flight {id: $flightId})")
-            .Set("flight.departure_time = $departureTime") // Updates only the specified properties
+            .Set("flight.departure_time = $departureTime, flight.completion_time = $completionTime") // Updates only the specified properties
             .WithParams(new
             {
                 flightId = flightToUpdate.Id,
-                departureTime = flightToUpdate.DepartureTime.ToString()
+                departureTime = flightToUpdate.DepartureTime,
+                completionTime = flightToUpdate.CompletionTime
             })
             .ExecuteWithoutResultsAsync();
 
