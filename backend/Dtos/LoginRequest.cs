@@ -1,6 +1,6 @@
 namespace backend.Dtos
 {
-    public class JwtRequest
+    public class LoginRequest
     {
         public required string Email { get; set; }
         public string? Role { get; set; }

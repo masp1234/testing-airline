@@ -13,7 +13,6 @@ namespace backend.Controllers
         private readonly IBookingService _bookingService = bookingService;
 
         [Authorize(Roles = "Customer")]
-        // Starting the route with a slash ignores the controller-level route prefix.
         [HttpGet("/api/mysql/users/{email}/bookings")]
         public async Task<IActionResult> GetBookingsByUserEmail(string email)
         {

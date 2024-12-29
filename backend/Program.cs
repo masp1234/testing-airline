@@ -59,7 +59,8 @@ namespace backend
 			});
 			// Try to load a connection string from .env. If it does not exist, get it from an appsettings.json file.
 			string? connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING") ?? builder.Configuration.GetConnectionString("Default");
-			builder.Services.AddDbContext<DatabaseContext>(options =>
+
+            builder.Services.AddDbContext<DatabaseContext>(options =>
 			{
 				options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 			});
@@ -105,8 +106,8 @@ namespace backend
 			
 			builder.Services.AddControllersWithViews();
 	  
-	  // Add HTTP client for Google Distance API
-	  builder.Services.AddHttpClient<IDistanceApiService, DistanceApiService>();
+			// Add HTTP client for Google Distance API
+			 builder.Services.AddHttpClient<IDistanceApiService, DistanceApiService>();
 
 
             // Register / add repositories to the container

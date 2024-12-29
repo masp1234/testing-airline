@@ -41,15 +41,15 @@ namespace backend.Services
             var mappedUser = _mapper.Map<UserResponse>(user);
             return mappedUser;
         }
-        public async Task<JwtRequest?> CheckUserByEmail(string email)
+        public async Task<LoginRequest?> CheckUserByEmail(string email)
         {
             User? user = await _userRepository.GetByEmail(email);
-            var mappedUser = _mapper.Map<JwtRequest>(user);
+            var mappedUser = _mapper.Map<LoginRequest>(user);
             return mappedUser;
         }
-        public Boolean CheckPasswordValidation(string requestedPassword, string userPassword, JwtRequest user)
+        public Boolean CheckPasswordValidation(string requestedPassword, string userPassword, LoginRequest user)
         {
-            var passwordHasher = new PasswordHasher<JwtRequest>();
+            var passwordHasher = new PasswordHasher<LoginRequest>();
             var verificationResult = passwordHasher.VerifyHashedPassword(user, userPassword, requestedPassword);
              if (verificationResult == PasswordVerificationResult.Success){
                 return true;
@@ -70,7 +70,7 @@ namespace backend.Services
             await _userRepository.Create(userToCreate);
         }
 
-        public string GenerateJwtToken(JwtRequest user)
+        public string GenerateJwtToken(LoginRequest user)
         {
             var claims = new[]
             {

@@ -61,7 +61,7 @@ namespace backend.Controllers
 		}
 		[HttpPost("login")]
 		
-		public async Task<IActionResult> Login([FromBody] JwtRequest request)
+		public async Task<IActionResult> Login([FromBody] LoginRequest request)
 		{
 			var user = await _userService.CheckUserByEmail(request.Email);
 
