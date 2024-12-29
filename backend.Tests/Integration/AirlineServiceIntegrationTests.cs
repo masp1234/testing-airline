@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using Testcontainers.MySql;
 using Xunit.Abstractions;
 
-public class AirlineServiceTests: IClassFixture<TestDatabaseFixture>
+public class AirlineServiceIntegrationTests: IClassFixture<TestDatabaseFixture>
 {
     private readonly AirlineService _sut;
     private readonly TestDatabaseFixture _dbFixture;
 
-    public AirlineServiceTests(TestDatabaseFixture dbFixture)
+    public AirlineServiceIntegrationTests(TestDatabaseFixture dbFixture)
     {
         _dbFixture = dbFixture;
         var configuration = new MapperConfiguration(cfg =>

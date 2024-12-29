@@ -72,6 +72,7 @@ namespace backend.Tests.Unit
 
         public async Task GetUserByEmail_ShouldReturnNull_When_UserDoesNotExist()
         {
+            _mockUserRepository.Setup(repo => repo.GetByEmail(It.Is<string>(email => email == _mockUsers[0].Email))).ReturnsAsync(_mockUsers[0]);
             _mockUserRepository.Setup(repo => repo.GetAll()).ReturnsAsync([]);
             var users = await _sut.GetUsers();
             Assert.Empty(users);
