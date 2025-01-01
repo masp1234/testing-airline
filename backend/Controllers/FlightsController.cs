@@ -86,12 +86,13 @@ namespace backend.Controllers
 			}
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpPatch("{id}")]
 		public async Task<IActionResult> UpdateFlight([FromBody]UpdateFlightRequest updateFlightRequest, int id)
 		{
 			try
 			{
-                Console.WriteLine(updateFlightRequest.DepartureDateTime);
+			
                 var existingFlight = await _flightService.GetFlightById(id);
                 if (existingFlight == null)
                 {
@@ -100,7 +101,7 @@ namespace backend.Controllers
                 bool updatedSuccessfully = await _flightService.UpdateFlight(updateFlightRequest, existingFlight);
 				if (!updatedSuccessfully)
 				{
-					return Conflict(new { message = $"Could not the update flight because there were conflicting flight schedules." });
+					return Conflict(new { message = $"Could not update the flight because there were conflicting flight schedules." });
 				}
                 return Ok(new { message = "The flight was updated successfully." });
 
