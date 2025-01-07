@@ -10,11 +10,11 @@ namespace backend.Services
         Task<User?> GetUserById(int id);
 
         Task<UserResponse?> GetUserByEmail(string email);
-        Task<JwtRequest?> CheckUserByEmail(string email);
+        Task<LoginRequest?> CheckUserByEmail(string email);
 
         Task CreateUser(UserCreationRequest userCreationRequest);
 
-        string GenerateJwtToken(JwtRequest user);
-        Boolean CheckPasswordValidation(string requestedPassword, string userPassword, JwtRequest user);
+        string GenerateJwtToken(LoginRequest user);
+        Boolean CheckPasswordValidation(string requestedPassword, string userPassword, LoginRequest user);
     }
 }

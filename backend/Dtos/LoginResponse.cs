@@ -1,6 +1,6 @@
 namespace backend.Dtos
 {
-    public class JwtResponse
+    public class LoginResponse
     {
         private string token;
     }
