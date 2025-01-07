@@ -3,7 +3,7 @@
     public class AirplaneBookedTimeSlot
     {
 
-        public int FlightId { get; set; }
+        public long FlightId { get; set; }
 
         public DateTime TimeSlotStart { get; set; }
 

@@ -5,7 +5,7 @@ namespace backend.Services
 
     public class TicketAvailabilityChecker: ITicketAvailabilityChecker
     {
-        private readonly Dictionary<(int flightId, FlightClassName flightClass), int> ticketClassesPerFlight = [];
+        private readonly Dictionary<(long flightId, FlightClassName flightClass), int> ticketClassesPerFlight = [];
         HashSet<Flight> uniqueFlights = [];
 
         // Adds the flights that need to be checked - uses a HashSet to only add unique flights
@@ -15,7 +15,7 @@ namespace backend.Services
         }
 
         // Adds together the ticket amount per flight class and id
-        public void AddAmountOfTicketsForFlightIdAndFlightClass(int flightId, FlightClassName flightClassName)
+        public void AddAmountOfTicketsForFlightIdAndFlightClass(long flightId, FlightClassName flightClassName)
         {
             var flightIdAndClassName = (flightId, flightClassName);
             if (ticketClassesPerFlight.ContainsKey(flightIdAndClassName))

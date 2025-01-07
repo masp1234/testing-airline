@@ -21,7 +21,7 @@ namespace backend.Repositories
             return users;
         }
 
-        public async Task<User?> GetUserById(int id)
+        public async Task<User?> GetUserById(long id)
         {
             User? user = await _context.Users.FindAsync(id);
             return user;

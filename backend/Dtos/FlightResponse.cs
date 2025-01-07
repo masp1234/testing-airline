@@ -4,7 +4,7 @@ namespace backend.Dtos
 {
     public class FlightResponse
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string FlightCode { get; set; } = null!;
 

@@ -18,12 +18,12 @@ namespace backend.Services
             return mappedAirplanes;
         }
 
-        public async Task<Airplane?> GetAirplaneById(int id)
+        public async Task<Airplane?> GetAirplaneById(long id)
         {
             return await _airplaneRepository.GetAirplaneById(id);
         }
 
-        public async Task<List<AirplaneBookedTimeSlot>> GetBookedTimeslotsByAirplaneId(int id)
+        public async Task<List<AirplaneBookedTimeSlot>> GetBookedTimeslotsByAirplaneId(long id)
         {
             var flights = await _flightRepository.GetFlightsByAirplaneId(id);
             var bookedTimeSlots = GetBookedTimeSlots(flights);

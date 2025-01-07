@@ -27,7 +27,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("{id}/bookedTimeSlots")]
-        public async Task<IActionResult> GetBookedTimeslotsByAirplaneId(int id)
+        public async Task<IActionResult> GetBookedTimeslotsByAirplaneId(long id)
         {
             try
             {

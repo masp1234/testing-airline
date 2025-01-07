@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using backend.Dtos;
 using backend.Models;
+using backend.Models.MongoDB;
+using backend.Models.Neo4jModels;
 
 namespace backend.Config
 {

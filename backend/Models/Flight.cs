@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace backend.Models;
 
 public partial class Flight
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public string FlightCode { get; set; } = null!;
 
-    public int DeparturePort { get; set; }
+    public long DeparturePort { get; set; }
 
-    public int ArrivalPort { get; set; }
+    public long ArrivalPort { get; set; }
 
     public DateTime DepartureTime { get; set; }
 
@@ -29,11 +30,18 @@ public partial class Flight
 
     public int BusinessClassSeatsAvailable { get; set; }
 
-    public int FlightsAirlineId { get; set; }
+    public long FlightsAirlineId { get; set; }
 
-    public int FlightsAirplaneId { get; set; }
+    public long FlightsAirplaneId { get; set; }
 
-    public string IdempotencyKey { get; set; }
+    public string IdempotencyKey { get; set; } = null!;
+    public string? CreatedBy { get; set; }
+
+    public string? UpdatedBy { get; set; }
+
+    [ConcurrencyCheck]
+    public int Version { get; set; }
+
     [JsonIgnore]
     public virtual Airport ArrivalPortNavigation { get; set; } = null!;
 

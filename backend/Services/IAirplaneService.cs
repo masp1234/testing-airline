@@ -7,8 +7,8 @@ namespace backend.Services
     {
         Task<List<AirplaneResponse>> GetAllAirplanes();
 
-        Task<Airplane?> GetAirplaneById(int id);
+        Task<Airplane?> GetAirplaneById(long id);
 
-        Task<List<AirplaneBookedTimeSlot>> GetBookedTimeslotsByAirplaneId(int id);
+        Task<List<AirplaneBookedTimeSlot>> GetBookedTimeslotsByAirplaneId(long id);
     }
 }

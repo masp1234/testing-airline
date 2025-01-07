@@ -5,11 +5,11 @@ namespace backend.Models;
 
 public partial class Booking
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public string ConfirmationNumber { get; set; } = null!;
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 

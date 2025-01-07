@@ -7,14 +7,14 @@ namespace backend.Services
     {
         Task<List<FlightResponse>> GetAllFlights();
 
-        Task<Flight?> GetFlightById(int id);
+        Task<Flight?> GetFlightById(long id);
 
-        Task<FlightResponse?> GetFlightWithRelationshipsById(int id);
+        Task<FlightResponse?> GetFlightWithRelationshipsById(long id);
         Task<Flight> CreateFlight(FlightCreationRequest flightCreationRequest);
-        Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate);
-        Task<FlightClass?> GetFlightClassById(int id);
+        Task<List<FlightResponse>> GetFlightsByDepartureDestinationAndDepartureDate(long departureAirportId, long destinationAirportId, DateOnly departureDate);
+        Task<FlightClass?> GetFlightClassById(long id);
         Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight);
-        Task CancelFlight(int id);
+        Task CancelFlight(long id, string canceledBy);
         Task ChangeFlight();
     }
 }
