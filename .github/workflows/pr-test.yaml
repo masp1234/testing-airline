@@ -20,10 +20,10 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore dependencies
-        run: dotnet restore ./backend.Tests.sln # Adjust the solution path if needed
+        run: dotnet restore ./backend.sln # Adjust the solution path if needed
 
       - name: Build solution
-        run: dotnet build --no-restore ./backend.Tests.sln
+        run: dotnet build --no-restore ./backend.sln
 
       - name: Run unit tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Unit"
