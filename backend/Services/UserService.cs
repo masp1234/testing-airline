@@ -65,6 +65,24 @@ namespace backend.Services
                                             
             };
 
+            // Step to validate email-content on backend-level
+            if (!userToCreate.Email.Contains("@"))
+            {
+                throw new ArgumentException("Email is not valid.", nameof(userToCreate.Email));
+            }
+
+            // Step to validate password length on backend-level
+            if (userCreationRequest.Password.Length < 6 || userCreationRequest.Password.Length > 30)
+            {
+                throw new ArgumentOutOfRangeException("Password must be between 6 and 30 characters long.", nameof(userCreationRequest.Password));
+            }
+
+            // Check that password contains at least one uppercase letter, one lowercase letter, and one digit
+            if (!userCreationRequest.Password.Any(char.IsUpper) || !userCreationRequest.Password.Any(char.IsLower) || !userCreationRequest.Password.Any(char.IsDigit))
+            {
+                throw new ArgumentException("Password must contain at least one uppercase letter, one lowercase letter, and one digit.", nameof(userCreationRequest.Password));
+            }
+
             string hashedPassword = _passwordHasher.HashPassword(userToCreate, userCreationRequest.Password);
             userToCreate.Password = hashedPassword;
             await _userRepository.Create(userToCreate);
