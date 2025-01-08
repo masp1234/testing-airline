@@ -151,7 +151,7 @@ namespace backend.Tests.Integration
         [Fact]
         public void CheckPasswordValidation_ShouldReturnTrue_When_PasswordsMatch()
         {
-            string matchingHashedPassword = "AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==";
+            string matchingHashedPassword = "AQAAAAIAAYagAAAAELTgUXJVjB0nDV3ATcpryRfjQDbOgakXNXY9QDJvyDAgHLaKa0CPc7eFiB1WUr3lUg==";
             bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, matchingHashedPassword, loginRequest);
             Assert.True(validPassword);
         }
