@@ -66,7 +66,7 @@ namespace backend.Services
             };
 
             // Step to validate email-content on backend-level
-            if (!userToCreate.Email.Contains("@"))
+            if (!userToCreate.Email.Contains("@") || !userToCreate.Email.Contains("."))
             {
                 throw new ArgumentException("Email is not valid.", nameof(userToCreate.Email));
             }
