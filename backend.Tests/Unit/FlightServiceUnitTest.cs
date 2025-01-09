@@ -17,6 +17,26 @@ namespace backend.Tests.Unit
         private readonly Mock<IFlightRepository> _mockFlightRepository;
         private readonly Mock<IAirportRepository> _airportRepository ;
 
+        private readonly List<FlightClass> _mockFlightClass = 
+        [
+            new()
+            {
+                Id = 1,
+                Name = FlightClassName.EconomyClass
+            },
+            new()
+            {
+                Id = 2,
+                Name = FlightClassName.BusinessClass
+            },
+            new()
+            {
+                Id = 3,
+                Name = FlightClassName.FirstClass
+            }
+
+        ];
+
         private readonly List<Flight> _mockFlights = 
         [
             new()
@@ -264,6 +284,33 @@ namespace backend.Tests.Unit
             Assert.NotNull(flight);
             Assert.Empty(flight);
         }
+
+        [Fact]
+        public async Task GetFlightClassById_ReturnsFlightClass_WhenFlightClassExists()
+        {
+            var flightClassId = 1;
+            _mockFlightRepository.Setup(repo => repo.GetFlightClassById(flightClassId)).ReturnsAsync(_mockFlightClass[0]);
+
+            var flightClass = await _flightService.GetFlightClassById(flightClassId);
+
+            Assert.NotNull(flightClass);
+            Assert.Equal(flightClassId, flightClass.Id);
+            Assert.Equal(FlightClassName.EconomyClass, flightClass.Name);
+           
+        }
+
+        [Fact]
+        public async Task GetFlightClassById_ReturnsNull_WhenFlightClassDoesNotExist()
+        {
+            var flightClassId = 4;
+            _mockFlightRepository.Setup(repo => repo.GetFlightClassById(flightClassId)).ReturnsAsync((FlightClass)null);
+
+            var flightClass = await _flightService.GetFlightClassById(flightClassId);
+
+            Assert.Null(flightClass);
+          
+        }
+
 
 
 
