@@ -15,5 +15,9 @@ namespace backend.Dtos
             @"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$",
             ErrorMessage = "Password must contain at least one uppercase letter, one lowercase letter, and one digit.")]
         public string Password { get; set; }
+
+        [Required]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
+        public string RepeatedPassword { get; set; }
     }
 }

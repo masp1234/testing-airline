@@ -77,6 +77,12 @@ namespace backend.Services
                 throw new ArgumentOutOfRangeException("Password must be between 6 and 30 characters long.", nameof(userCreationRequest.Password));
             }
 
+            // Step to vaa;idate password match on backend-level
+            if (userCreationRequest.Password != userCreationRequest.RepeatedPassword)
+            {
+                throw new ArgumentException("Passwords do not match.", nameof(userCreationRequest.RepeatedPassword));
+            }
+
             // Check that password contains at least one uppercase letter, one lowercase letter, and one digit
             if (!userCreationRequest.Password.Any(char.IsUpper) || !userCreationRequest.Password.Any(char.IsLower) || !userCreationRequest.Password.Any(char.IsDigit))
             {
