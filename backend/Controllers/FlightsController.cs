@@ -114,24 +114,6 @@ namespace backend.Controllers
             }
         }
 
-        // Dummy endpoint to test email sending
-        // Sends both the 'cancellation' and 'change' email
-        [HttpGet("emailTest")]
-		public async Task<ActionResult> DummyCancelFlight()
-		{
-			try
-			{
-			//	await _flightService.CancelFlight();
-				await _flightService.ChangeFlight();
-				return Ok(new { message = "Email(s) has been sendt regarding cancellation of existingFlight." });
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occured while trying to cancel existingFlight." });
-			}
-		}
-
 		[Authorize(Roles = "Admin")]
 		[HttpDelete("{Id}")]
 		public async Task<IActionResult> DeleteFlight([FromRoute] int Id)
