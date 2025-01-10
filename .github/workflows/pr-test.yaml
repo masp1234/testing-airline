@@ -45,7 +45,7 @@ jobs:
 
       - name: Create tables in test database
         run: |
-          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/SQL/airline_system.sql
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/SQL/airline_system.sql
 
       - name: Run unit tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Unit"
