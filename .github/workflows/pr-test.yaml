@@ -19,6 +19,15 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
 
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+        ports:
+          - 3306:3306
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,6 +42,10 @@ jobs:
 
       - name: Build solution
         run: dotnet build --no-restore ./backend.sln
+
+      - name: Create tables in test database
+        run: |
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/SQL/airline_system.sql
 
       - name: Run unit tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Unit"
@@ -54,10 +67,9 @@ jobs:
           --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
           --output TestingAirline.postman_environment.json
 
-      - name: Seed database & wait for it to finish
+      - name: Seed database
         run: |
-          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/Scripts/create-database.sh \
-          && sleep 20
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/SQL/sample_data.sql
 
       - name: Install Newman
         run: |
