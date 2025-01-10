@@ -54,9 +54,10 @@ jobs:
           --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
           --output TestingAirline.postman_environment.json
 
-      - name: Seed database
+      - name: Seed database & wait for it to finish
         run: |
-          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./testing-airline/backend/Database/Scripts/create-database.sh
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/Scripts/create-database.sh \
+          && sleep 20
 
       - name: Install Newman
         run: |
