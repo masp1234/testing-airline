@@ -84,7 +84,7 @@ jobs:
           newman run TestingAirline.postman_collection.json \
           -e TestingAirline.postman_environment.json \
           -r cli,htmlextra --reporter-htmlextra-export postmanTestResults/htmlreport.html --verbose \
-          --delay-request 3000
+          --delay-request 1000
       
       - name: Upload Postman test results
         uses: actions/upload-artifact@v4
