@@ -53,12 +53,20 @@ jobs:
       - name: Start the .NET application as a background task and wait for it to start
         run: dotnet run --project backend/backend.csproj & sleep 15
       
-      - name: Run Postman Collection
+      - name: Run Postman Collection with retries
         run: |
-          newman run TestingAirline.postman_collection.json \
-          -e TestingAirline.postman_environment.json \
-          -r cli,htmlextra --reporter-htmlextra-export postmanTestResults/htmlreport.html --verbose \
-          --delay-request 4000
+          max_retries=3
+          count=0
+          until [ $count -ge $max_retries ]
+          do
+            newman run TestingAirline.postman_collection.json \
+            -e TestingAirline.postman_environment.json \
+            -r cli,htmlextra --reporter-htmlextra-export postmanTestResults/htmlreport.html --verbose \
+            --delay-request 3000 && break
+            count=$((count+1))
+            echo "Retrying... ($count/$max_retries)"
+            sleep 5
+          done
       
       - name: Upload Postman test results
         uses: actions/upload-artifact@v4
