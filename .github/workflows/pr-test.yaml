@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore dependencies
-        run: dotnet restore ./backend.sln # Adjust the solution path if needed
+        run: dotnet restore ./backend.sln
 
       - name: Build solution
         run: dotnet build --no-restore ./backend.sln
@@ -30,3 +30,38 @@ jobs:
 
       - name: Run integration tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Integration"
+
+      - name: Fetch Postman Collection
+        run: |
+          curl --request GET \
+            --url https://api.getpostman.com/collections/${{ secrets.TEST_COLLECTION_ID }} \
+            --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
+            --output TestingAirline.postman_collection.json
+    
+      - name: Fetch Postman Environment
+        run: |
+          curl --request GET \
+          --url https://api.getpostman.com/environments/${{ secrets.TEST_ENVIRONMENT_ID }} \
+          --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
+          --output TestingAirline.postman_environment.json
+
+      - name: Install Newman
+        run: |
+          npm i -g newman \
+          && npm install -g newman-reporter-htmlextra
+      
+      - name: Start the .NET application as a background task and wait for it to start
+        run: dotnet run --project backend/backend.csproj & sleep 15
+      
+      - name: Run Postman Collection
+        run: |
+          newman run TestingAirline.postman_collection.json \
+          -e TestingAirline.postman_environment.json \
+          -r cli,htmlextra --reporter-htmlextra-export postmanTestResults/htmlreport.html --verbose
+      
+      - name: Upload Postman test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunReports
+          path: postmanTestResults
+      
