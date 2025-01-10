@@ -177,8 +177,26 @@ namespace backend.Tests.Integration
 
         [Fact]
         public void GenerateJwtToken_ShouldThrowException_When_MissingEnvironmentVariables()
+        // Made like this to accomadate the env-variables set in workflow.
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
+            var originalJwtSecretKey = Environment.GetEnvironmentVariable("JWTSecretKey");
+            var originalIssuer = Environment.GetEnvironmentVariable("Issuer");
+            var originalAudience = Environment.GetEnvironmentVariable("Audience");
+
+            try
+            {
+                Environment.SetEnvironmentVariable("JWTSecretKey", null);
+                Environment.SetEnvironmentVariable("Issuer", null);
+                Environment.SetEnvironmentVariable("Audience", null);
+
+                var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("JWTSecretKey", originalJwtSecretKey);
+                Environment.SetEnvironmentVariable("Issuer", originalIssuer);
+                Environment.SetEnvironmentVariable("Audience", originalAudience);
+            }
         }
     }
 }
