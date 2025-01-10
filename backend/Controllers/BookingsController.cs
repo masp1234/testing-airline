@@ -12,7 +12,7 @@ namespace backend.Controllers
 
         private readonly IBookingService _bookingService = bookingService;
 
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Admin")]
         [HttpGet("/api/mysql/users/{email}/bookings")]
         public async Task<IActionResult> GetBookingsByUserEmail(string email)
         {
@@ -36,7 +36,7 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = "An error occured while trying to get bookings." });
             }
         }
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "Customer, Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromBody] BookingCreationRequest bookingCreationRequest)
         {
