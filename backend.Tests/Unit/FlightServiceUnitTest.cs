@@ -11,9 +11,9 @@ namespace backend.Tests.Unit
     public class FlightServiceUnitTest
     {
         private readonly IFlightService _flightService;
-        private readonly IDistanceApiService _distanceApiService;
-        private readonly IEmailService _emailService;
-        private readonly IAirplaneService _airplaneService;
+        private readonly Mock<IDistanceApiService> _mockDistanceApiService;
+        private readonly Mock<IEmailService> _mockEmailService;
+        private readonly Mock<IAirplaneService> _mockAirplaneService;
         private readonly Mock<IFlightRepository> _mockFlightRepository;
         private readonly Mock<IAirportRepository> _airportRepository ;
 
@@ -185,8 +185,11 @@ namespace backend.Tests.Unit
 
             IMapper mapper = configuration.CreateMapper();
 
+            _mockAirplaneService = new Mock<IAirplaneService>();
+            _mockDistanceApiService = new Mock<IDistanceApiService>();
+            _mockEmailService = new Mock<IEmailService>();
 
-            _flightService = new FlightService(_mockFlightRepository.Object, mapper, _distanceApiService, _airportRepository.Object, _emailService, _airplaneService );
+            _flightService = new FlightService(_mockFlightRepository.Object, mapper, _mockDistanceApiService.Object, _airportRepository.Object, _mockEmailService.Object, _mockAirplaneService.Object );
         }
 
         [Fact]

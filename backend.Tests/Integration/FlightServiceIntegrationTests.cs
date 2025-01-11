@@ -13,8 +13,7 @@ namespace backend.Tests.Integration
         private readonly TestDatabaseFixture _dbFixture;
         private readonly IFlightService _flightService;
         private readonly Mock<IDistanceApiService> _mockDistanceApiService;
-        private readonly IEmailService _emailService;
-        private readonly IAirplaneService _airplaneService;
+        private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<IAirplaneService> _mockAirplaneService;
         private readonly Airplane _existingAirplane = new()
         {
@@ -67,6 +66,24 @@ namespace backend.Tests.Integration
             FlightsAirlineId= 1 ,
             FlightsAirplaneId = 1,
         };
+        private readonly Flight _existingFlight2 = new()
+        {
+            Id = 2,
+            FlightCode = "DL100",
+            DepartureTime = new DateTime(2025, 4, 26, 8, 0, 0),
+            CompletionTime = new DateTime(2025, 4, 26, 12, 0, 0),
+            TravelTime = 360,
+            Kilometers = 450,
+            Price = 199,
+            IdempotencyKey = "IdempotencyKeyfmefsdsdcwe",
+            EconomyClassSeatsAvailable = 140,
+            FirstClassSeatsAvailable = 5,
+            BusinessClassSeatsAvailable = 40,
+            ArrivalPort = 2 ,
+            DeparturePort = 1,
+            FlightsAirlineId= 1 ,
+            FlightsAirplaneId = 1,
+        };
 
 
         public FlightServiceIntegrationTests(TestDatabaseFixture dbFixture )
@@ -81,8 +98,9 @@ namespace backend.Tests.Integration
             IMapper mapper = configuration.CreateMapper();
             _mockAirplaneService = new Mock<IAirplaneService>();
             _mockDistanceApiService = new Mock<IDistanceApiService>();
+            _mockEmailService = new Mock<IEmailService>();
 
-            _flightService = new FlightService(new FlightRepository(_dbFixture.DbContext), mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), _emailService, _mockAirplaneService.Object);
+            _flightService = new FlightService(new FlightRepository(_dbFixture.DbContext), mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), _mockEmailService.Object, _mockAirplaneService.Object);
 
             _dbFixture.ResetDatabase();
 
@@ -181,7 +199,7 @@ namespace backend.Tests.Integration
         [InlineData(11, 30)]
         [InlineData(11, 45)]
         [InlineData(11, 59)]
-        public async void CreateFlight__Returns_InvalidOperationException_WhenOverlappingFlight(int hour,  int minutes)
+        public async void CreateFlight__Returns_Exception_WhenOverlappingFlight(int hour,  int minutes)
         {
 
             var flightCreationRequest = new FlightCreationRequest
@@ -235,7 +253,7 @@ namespace backend.Tests.Integration
             Assert.Equal(flightCreationRequest.ArrivalAirportId, flight.ArrivalPort);
             
         }
-        
+
 
         [Fact]
         public async Task CreateFlight_CalculatesCorrectPrice_WhenDataIsValid()
@@ -266,7 +284,79 @@ namespace backend.Tests.Integration
             Assert.Equal(35m, createdFlight.Price); // 500 km * 0.07 = 35.00
         }
 
+        [Fact]
+        public async Task UpdateFlight_ShouldRetunTrue_WhenFlightUpdateSuccessfully()
+        {
+            var updateFlightRequest = new UpdateFlightRequest
+            {
+                DepartureDateTime = new DateTime(2025, 1, 25, 8, 0, 0),
+            };
 
+            var updatedFlight = await _flightService.UpdateFlight(updateFlightRequest, _existingFlight);
+
+            Assert.True(updatedFlight);
+        }
+
+        [Fact]
+        public async Task UpdateFlight_ReturnsFalse_WhenUpdateFails()
+        {
+            // Arrange
+            var updateFlightRequest = new UpdateFlightRequest
+            {
+                DepartureDateTime = new DateTime(2025, 1, 25, 8, 0, 0),
+            };
+
+            var flight = new Flight
+            {
+                Id = 100,
+                TravelTime = 120,
+                DepartureTime = DateTime.UtcNow.AddDays(1)
+            };
+
+            
+            var updatedFlight = await _flightService.UpdateFlight(updateFlightRequest, flight);
+
+            Assert.False(updatedFlight);
+            
+        }
+
+        [Fact]
+        public async Task UpdateFlight_CalculatesCompletionTimeCorrectly()
+        {
+            // Arrange
+            var updateFlightRequest = new UpdateFlightRequest
+            {
+                DepartureDateTime = new DateTime(2025, 1, 25, 8, 0, 0),
+            };
+
+
+            await _flightService.UpdateFlight(updateFlightRequest, _existingFlight);
+            var updatedFlight = await _flightService.GetFlightById(_existingFlight.Id);
+
+            int simulatedPreparationTimeInMinutes = 120;
+
+            var expectedCompletionTime = updateFlightRequest.DepartureDateTime.AddMinutes(_existingFlight.TravelTime + simulatedPreparationTimeInMinutes);
+            Assert.Equal(expectedCompletionTime, updatedFlight?.CompletionTime);
+        }
+
+        [Theory]
+        [InlineData(11, 30)]
+        [InlineData(11, 45)]
+        [InlineData(11, 59)]
+        public async void UpdateFlight__Returns_Exception_WhenOverlappingFlight(int hour,  int minutes)
+        {
+            _dbFixture.DbContext.Flights.Add(_existingFlight2);
+            await _dbFixture.DbContext.SaveChangesAsync();
+
+            var updateFlightRequest = new UpdateFlightRequest
+                {
+                    DepartureDateTime = new DateTime(2025, 4, 26, hour, minutes, 0),
+                };
+
+            await Assert.ThrowsAsync<Exception>(() => _flightService.UpdateFlight(updateFlightRequest, _existingFlight));
+          
+        }
+    
 
 
 

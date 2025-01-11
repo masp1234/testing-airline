@@ -198,8 +198,6 @@ namespace backend.Repositories
 
         public async Task<bool> UpdateFlight(Flight flightToUpdate)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-
             try
             {
                 var overLappingFlights = await GetFlightsByAirplaneIdAndTimeInterval(flightToUpdate);
@@ -210,13 +208,11 @@ namespace backend.Repositories
                 }
                 _context.Flights.Update(flightToUpdate);
                 await _context.SaveChangesAsync();
-                await _context.Database.CommitTransactionAsync();
                 return true;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
-                await transaction.RollbackAsync();
                 return false;
             }
         }

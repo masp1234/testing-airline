@@ -123,8 +123,17 @@ namespace backend.Services
 
         public async Task<bool> UpdateFlight(UpdateFlightRequest updateFlightRequest, Flight flight)
         {
+            
             flight.DepartureTime = updateFlightRequest.DepartureDateTime;
             flight.CompletionTime = CalculateFlightCompletionTime(flight.DepartureTime, flight.TravelTime);
+
+            var overLappingFlights = await _flightRepository.GetFlightsByAirplaneIdAndTimeInterval(flight);
+            
+            if (overLappingFlights.Count > 0 && overLappingFlights.Any(f => f.Id != flight.Id))
+            {
+                throw new Exception("There was 1 or more overlapping flights.");
+            }
+
             bool updatedSuccessfully = await _flightRepository.UpdateFlight(flight);
             if (updatedSuccessfully)
             {
