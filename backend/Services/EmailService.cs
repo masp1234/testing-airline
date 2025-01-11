@@ -19,6 +19,12 @@ namespace backend.Services
 
         public async Task SendBookingConfirmationMail(BookingProcessedRequest bookingProcessedRequest)
         {
+            if (_emailSender == "" || _emailPassword == "")
+            {
+                Console.WriteLine("Emails are turned off");
+                return;
+            }
+
             string subject = "Icarus Airlines - Booking Confirmation";
             
 
@@ -62,6 +68,11 @@ namespace backend.Services
 
         public async Task SendFlightEmailAsync(List<Passenger> passengers, FlightStatus status)
         {
+            if (_emailSender == "" || _emailPassword == "")
+            {
+                Console.WriteLine("Emails are turned off");
+                return;
+            }
             if (passengers == null || passengers.Count == 0)
             {
                 Console.WriteLine("No passengers to send emails to.");
