@@ -51,5 +51,5 @@ Now you just click on the play button that says `start` when you mouse over it.
 Locate the /bin/ folder in the JMeter directory. Copy the path and add it to your `System environment variables`
 
 If you added JMeter to the path correctly, you should be able to run the following command
-`jmeter -n -t TestPlans/AirlineProject_LoadTesting-000132.jmx
+`jmeter -n -t TestPlans/AirlineProject_LoadTesting-000132.jmx`
 
