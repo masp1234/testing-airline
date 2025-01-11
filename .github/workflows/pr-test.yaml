@@ -10,6 +10,24 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
+
+    env:
+          JWTSecretKey: ${{ secrets.JWT_SECRET_KEY }}
+          Issuer: ${{ secrets.ISSUER }}
+          Audience: ${{ secrets.AUDIENCE }}
+          MYSQL_CONNECTION_STRING: ${{ secrets.MYSQL_CONNECTION_STRING }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
+
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+        ports:
+          - 3306:3306
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,13 +38,59 @@ jobs:
           dotnet-version: '8.0'
 
       - name: Restore dependencies
-        run: dotnet restore ./backend.sln # Adjust the solution path if needed
+        run: dotnet restore ./backend.sln
 
       - name: Build solution
         run: dotnet build --no-restore ./backend.sln
+
+      - name: Create tables in test database
+        run: |
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/SQL/airline_system.sql \
+          && sleep 15
 
       - name: Run unit tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Unit"
 
       - name: Run integration tests
         run: dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Integration"
+
+      - name: Fetch Postman Collection
+        run: |
+          curl --request GET \
+            --url https://api.getpostman.com/collections/${{ secrets.TEST_COLLECTION_ID }} \
+            --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
+            --output TestingAirline.postman_collection.json
+    
+      - name: Fetch Postman Environment
+        run: |
+          curl --request GET \
+          --url https://api.getpostman.com/environments/${{ secrets.TEST_ENVIRONMENT_ID }} \
+          --header "X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}" \
+          --output TestingAirline.postman_environment.json
+
+      - name: Seed database
+        run: |
+          mysql -h 127.0.0.1 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} ${{ secrets.MYSQL_DATABASE }} < ./backend/Database/SQL/sample_data.sql \
+          && sleep 15
+
+      - name: Install Newman
+        run: |
+          npm i -g newman \
+          && npm install -g newman-reporter-htmlextra
+      
+      - name: Start the .NET application as a background task and wait for it to start
+        run: dotnet run --project backend/backend.csproj & sleep 15
+      
+      - name: Run Postman Collection
+        run: |
+          newman run TestingAirline.postman_collection.json \
+          -e TestingAirline.postman_environment.json \
+          -r cli,htmlextra --reporter-htmlextra-export postmanTestResults/htmlreport.html --verbose \
+          --delay-request 1000
+      
+      - name: Upload Postman test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: RunReports
+          path: postmanTestResults
+      
