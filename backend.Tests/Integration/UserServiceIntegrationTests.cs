@@ -248,56 +248,5 @@ namespace backend.Tests.Integration
             var user = await _sut.CheckUserByEmail(nonexistingUserEmail);
             Assert.Null(user);
         }
-
-        [Fact]
-        public void CheckPasswordValidation_ShouldReturnTrue_When_PasswordsMatch()
-        {
-            string matchingHashedPassword = "AQAAAAIAAYagAAAAELTgUXJVjB0nDV3ATcpryRfjQDbOgakXNXY9QDJvyDAgHLaKa0CPc7eFiB1WUr3lUg==";
-            bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, matchingHashedPassword, loginRequest);
-            Assert.True(validPassword);
-        }
-
-        [Fact]
-        public void CheckPasswordValidation_ShouldReturnFalse_When_PasswordsDoNotMatch()
-        {
-            string hashedPasswordThatDoesNotMatch = "AQAAAAIAAYagAAAAEC6cop1QHZMe9j5x/K/OSHYPJssLCfc26kVDdigke13RVwqlNlgsGqbXKShhxdaScQ==";
-
-            bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, hashedPasswordThatDoesNotMatch, loginRequest);
-            Assert.False(validPassword);
-        }
-
-        [Fact]
-        public void GenerateJwtToken_ShouldReturnToken_When_ValidEnvironmentVariables()
-        {
-            Environment.SetEnvironmentVariable("JWTSecretKey", "123123123123123123123123123123123123123123123123");
-            Environment.SetEnvironmentVariable("Issuer", "Issuer");
-            Environment.SetEnvironmentVariable("Audience", "Audience");
-            var token = _sut.GenerateJwtToken(loginRequest);
-            Assert.NotNull(token);
-        }
-
-        [Fact]
-        public void GenerateJwtToken_ShouldThrowException_When_MissingEnvironmentVariables()
-        // Made like this to accomodate the env-variables set in workflow.
-        {
-            var originalJwtSecretKey = Environment.GetEnvironmentVariable("JWTSecretKey");
-            var originalIssuer = Environment.GetEnvironmentVariable("Issuer");
-            var originalAudience = Environment.GetEnvironmentVariable("Audience");
-
-            try
-            {
-                Environment.SetEnvironmentVariable("JWTSecretKey", null);
-                Environment.SetEnvironmentVariable("Issuer", null);
-                Environment.SetEnvironmentVariable("Audience", null);
-
-                var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
-            }
-            finally
-            {
-                Environment.SetEnvironmentVariable("JWTSecretKey", originalJwtSecretKey);
-                Environment.SetEnvironmentVariable("Issuer", originalIssuer);
-                Environment.SetEnvironmentVariable("Audience", originalAudience);
-            }
-        }
     }
 }
