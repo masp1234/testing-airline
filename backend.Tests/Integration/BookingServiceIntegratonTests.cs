@@ -381,6 +381,3 @@ namespace backend.Tests.Integration
 
     }
 }
-/*
-dotnet test ./backend.Tests/backend.Tests.csproj --filter "FullyQualifiedName~Integration"
-*/
