@@ -80,17 +80,14 @@ namespace backend.Tests.Unit
         [Fact]
         public async Task GetBookingsByUserEmail_ReturnsSuccess_WithBookings()
         {
-            // Arrange
             string email = "test1@example.com";
         
 
             _mockUserService.Setup(service => service.GetUserByEmail(email)).ReturnsAsync(_mockUsers[0]);
             _mockBookingRepository.Setup(repo => repo.GetBookingsByUserId(_mockUsers[0].Id)).ReturnsAsync(_mockBookings);
 
-            // Act
             var bokkings = await _bookingService.GetBookingsByUserEmail(email);
 
-            // Assert
             Assert.True(bokkings.IsSucces);
             Assert.NotNull(bokkings.Data);
             Assert.Equal(2, bokkings.Data.Count);
@@ -101,15 +98,12 @@ namespace backend.Tests.Unit
         [Fact]
         public async Task GetBookingsByUserEmail_ReturnsFailure_WhenUserNotFound()
         {
-            // Arrange
             string email = "test@example.com";
             _mockUserService.Setup(service => service.GetUserByEmail(email))
-                            .ReturnsAsync((Dtos.UserResponse?)null);
+                            .ReturnsAsync((UserResponse?)null);
 
-            // Act
             var bokkings = await _bookingService.GetBookingsByUserEmail(email);
 
-            // Assert
             Assert.False(bokkings.IsSucces);
             Assert.Equal($"No user found with the email {email}", bokkings.Message);
             Assert.Null(bokkings.Data);
@@ -118,9 +112,8 @@ namespace backend.Tests.Unit
         [Fact]
         public async Task GetBookingsByUserEmail_ReturnsSuccess_WithEmptyBookingsList()
         {
-            // Arrange
             string email = "test2@example.com";
-            var userResponse = new Dtos.UserResponse { Id = 1, Email = email };
+            var userResponse = new UserResponse { Id = 1, Email = email };
 
             _mockUserService.Setup(service => service.GetUserByEmail(email))
                             .ReturnsAsync(_mockUsers[1]);
@@ -128,10 +121,8 @@ namespace backend.Tests.Unit
             _mockBookingRepository.Setup(repo => repo.GetBookingsByUserId(userResponse.Id))
                                 .ReturnsAsync(new List<Booking>());
 
-            // Act
             var result = await _bookingService.GetBookingsByUserEmail(email);
 
-            // Assert
             Assert.True(result.IsSucces);
             Assert.NotNull(result.Data);
             Assert.Empty(result.Data);

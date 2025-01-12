@@ -36,8 +36,6 @@ namespace backend.Repositories
 
         public async Task<Booking> CreateBooking(BookingProcessedRequest request)
         {
-            var transaction = _context.Database.BeginTransaction();
-
             try
             {
                 var createdBooking = await _context.Bookings.AddAsync(new Booking()
@@ -73,12 +71,10 @@ namespace backend.Repositories
                 }
 
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return createdBooking.Entity;
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
                 throw;
 
             }
