@@ -159,6 +159,7 @@ namespace backend.Services
             {
                 await _emailService.SendFlightEmailAsync(passengers, FlightStatus.Cancelled);
             }
+            
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
