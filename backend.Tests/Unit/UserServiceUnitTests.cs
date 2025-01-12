@@ -70,6 +70,7 @@ namespace backend.Tests.Unit
             Assert.NotNull(user);
         }
 
+        [Fact]
         public async Task GetUserByEmail_ShouldReturnNull_When_UserDoesNotExist()
         {
             _mockUserRepository.Setup(repo => repo.GetByEmail(It.Is<string>(email => email == _mockUsers[0].Email))).ReturnsAsync(_mockUsers[0]);

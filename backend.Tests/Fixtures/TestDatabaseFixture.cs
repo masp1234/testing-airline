@@ -1,6 +1,7 @@
 ﻿using backend.Database;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 using Testcontainers.MySql;
 
 public class TestDatabaseFixture : IAsyncLifetime
