@@ -356,10 +356,25 @@ namespace backend.Tests.Integration
             await Assert.ThrowsAsync<Exception>(() => _flightService.UpdateFlight(updateFlightRequest, _existingFlight));
           
         }
-    
 
 
+        [Fact]
+        public async Task CancelFlight_CancelsFlightSuccessfully_WhenFlightExists()
+        {
 
+            await _flightService.CancelFlight(_existingFlight.Id);
+
+            var deletedFlight = await _flightService.GetFlightById(_existingFlight.Id);
+            Assert.Null(deletedFlight);
+        }
+
+        [Fact]
+        public async Task CancelFlight_ThrowsException_WhenFlightDoesNotExist()
+        {
+            int nonExistentFlightId = 999;
+
+            await Assert.ThrowsAsync<Exception>(() => _flightService.CancelFlight(nonExistentFlightId));
+        }
 
     }
 

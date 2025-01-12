@@ -100,7 +100,6 @@ namespace backend.Repositories
 
         public async Task<Flight> Delete(int id)
         {
-            var transaction = _context.Database.BeginTransaction();
 
             var flight = await _context.Flights
                 .Include(f => f.Tickets)
@@ -145,11 +144,9 @@ namespace backend.Repositories
             try
             {
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
             }
             catch (DbUpdateException ex)
             {
-                await transaction.RollbackAsync();
                 throw new DbUpdateException("Database Error: could not delete flight", ex);
             }
 
