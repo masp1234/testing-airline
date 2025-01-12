@@ -1,0 +1,6 @@
+email,password
+customer@example.com,123123
+customer2@example.com,123123
+customer3@example.com,123123
+customer4@example.com,123123
+customer5@example.com,123123

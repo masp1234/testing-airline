@@ -279,3 +279,7 @@ __pycache__/
 # Code coverage report tool files
 CoverageReport
 TestResults
+
+## Jmeter
+
+*/JMeter/Results/*

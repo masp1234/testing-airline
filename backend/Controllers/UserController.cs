@@ -33,10 +33,6 @@ namespace backend.Controllers
 		[HttpPost]
 		public async Task<IActionResult> AddUser([FromBody] UserCreationRequest userCreationRequest)
 		{
-			if (string.IsNullOrEmpty(userCreationRequest.Email) || string.IsNullOrEmpty(userCreationRequest.Password))
-			{
-				return BadRequest(new { message = "Email or password missing." });
-			}
 			try
 			{
 				UserResponse? user = await _userService.GetUserByEmail(userCreationRequest.Email);

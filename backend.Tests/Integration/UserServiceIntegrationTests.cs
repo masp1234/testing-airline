@@ -16,14 +16,14 @@ namespace backend.Tests.Integration
         private readonly User _existingUser = new()
         {
             Email = "customer@example.com",
-            Password = "123123"
+            Password = "Pass123123"
         };
 
         private readonly LoginRequest loginRequest = new()
         {
             Email = "test@email.com",
             Role = "Customer",
-            Password = "123123"
+            Password = "Pass123123"
         };
 
         public UserServiceIntegrationTests(TestDatabaseFixture dbFixture) {
@@ -74,7 +74,7 @@ namespace backend.Tests.Integration
             await _sut.CreateUser(new UserCreationRequest()
             {
                 Email = brandNewUserEmail,
-                Password = "123123"
+                Password = "Pass123123"
             });
 
             var createdUser = await _sut.GetUserByEmail(brandNewUserEmail);
@@ -90,7 +90,7 @@ namespace backend.Tests.Integration
                 await _sut.CreateUser(new UserCreationRequest()
                 {
                     Email = "customer@example.com",
-                    Password = "123123"
+                    Password = "Pass123123"
                 });
             });      
         }
@@ -151,7 +151,7 @@ namespace backend.Tests.Integration
         [Fact]
         public void CheckPasswordValidation_ShouldReturnTrue_When_PasswordsMatch()
         {
-            string matchingHashedPassword = "AQAAAAIAAYagAAAAEJvAdN3g69LF6cuKWK/xIHyUyz1qtNoVCMgKIlSd5oTPwk+7/A+qEAcxQJ2B+FvghQ==";
+            string matchingHashedPassword = "AQAAAAIAAYagAAAAELTgUXJVjB0nDV3ATcpryRfjQDbOgakXNXY9QDJvyDAgHLaKa0CPc7eFiB1WUr3lUg==";
             bool validPassword = _sut.CheckPasswordValidation(loginRequest.Password, matchingHashedPassword, loginRequest);
             Assert.True(validPassword);
         }
@@ -177,8 +177,26 @@ namespace backend.Tests.Integration
 
         [Fact]
         public void GenerateJwtToken_ShouldThrowException_When_MissingEnvironmentVariables()
+        // Made like this to accomadate the env-variables set in workflow.
         {
-            var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
+            var originalJwtSecretKey = Environment.GetEnvironmentVariable("JWTSecretKey");
+            var originalIssuer = Environment.GetEnvironmentVariable("Issuer");
+            var originalAudience = Environment.GetEnvironmentVariable("Audience");
+
+            try
+            {
+                Environment.SetEnvironmentVariable("JWTSecretKey", null);
+                Environment.SetEnvironmentVariable("Issuer", null);
+                Environment.SetEnvironmentVariable("Audience", null);
+
+                var exception = Assert.Throws<ArgumentNullException>(() => _sut.GenerateJwtToken(loginRequest));
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable("JWTSecretKey", originalJwtSecretKey);
+                Environment.SetEnvironmentVariable("Issuer", originalIssuer);
+                Environment.SetEnvironmentVariable("Audience", originalAudience);
+            }
         }
     }
 }
