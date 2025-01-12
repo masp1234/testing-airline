@@ -6,6 +6,6 @@ namespace backend.Repositories
     {
         Task<List<Airport>> GetAll();
 
-        Task<List<Airport>> FindByIds(params int[] ids);
+        Task<List<Airport>> FindByIds(params long[] ids);
     }
 }

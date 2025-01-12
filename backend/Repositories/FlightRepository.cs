@@ -26,13 +26,13 @@ namespace backend.Repositories
             return flights;
         }
 
-        public async Task<Flight?> GetFlightById(int id)
+        public async Task<Flight?> GetFlightById(long id)
         {
             var flight = await _context.Flights.FindAsync(id);
             return flight;
         }
 
-        public async Task<Flight?> GetFlightWithRelationshipsById(int id)
+        public async Task<Flight?> GetFlightWithRelationshipsById(long id)
         {
             var flight = await _context.Flights
                 .Include(flight => flight.FlightsAirline)
@@ -72,6 +72,7 @@ namespace backend.Repositories
             }
             // Insert the new flight
             var newFlight = new Flight
+
             {
                 FlightCode = flight.FlightCode,
                 DeparturePort = flight.DeparturePort,
@@ -92,13 +93,11 @@ namespace backend.Repositories
             _context.Flights.Add(newFlight);
             await _context.SaveChangesAsync();
 
-
-
             return newFlight;
 
         }
 
-        public async Task<Flight> Delete(int id)
+        public async Task<Flight> Delete(long id, string deletedBy)
         {
 
             var flight = await _context.Flights
@@ -155,22 +154,30 @@ namespace backend.Repositories
         }
 
 
-        public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(int departureAirportId, int destinationAirportId, DateOnly departureDate)
+        public async Task<List<Flight>> GetFlightsByDepartureDestinationAndDepartureDate(long departureAirportId, long destinationAirportId, DateOnly departureDate)
         {
+            // Define the start and end of the day.
+            DateTime startOfDay = departureDate.ToDateTime(TimeOnly.MinValue);
+            DateTime endOfDay = departureDate.ToDateTime(TimeOnly.MaxValue);
+
             var flights = await _context.Flights
                 .Where(flight =>
                        flight.DeparturePort == departureAirportId &&
                        flight.ArrivalPort == destinationAirportId &&
-                       DateOnly.FromDateTime(flight.DepartureTime) == departureDate
+                       // Flights departing on or after the start of the day.
+                       flight.DepartureTime >= startOfDay &&
+                       // Flights departing on or before the end of the day.
+                       flight.DepartureTime <= endOfDay      
                     )
                 .Include(flight => flight.FlightsAirline)
                 .Include(flight => flight.DeparturePortNavigation)
                 .Include(flight => flight.ArrivalPortNavigation)
                 .ToListAsync();
+
             return flights;
         }
 
-        public async Task<List<Flight>> GetFlightsByAirplaneId(int airplaneId)
+        public async Task<List<Flight>> GetFlightsByAirplaneId(long airplaneId)
         {
             var flights = await _context.Flights
                 .Where(flight => flight.FlightsAirplaneId == airplaneId)
@@ -179,13 +186,13 @@ namespace backend.Repositories
             return flights;
         }
 
-        public async Task<FlightClass?> GetFlightClassById(int id)
+        public async Task<FlightClass?> GetFlightClassById(long id)
         {
             var flightClass = await _context.FlightClasses.FindAsync(id);
             return flightClass;
         }
 
-        public async Task<List<Ticket>> GetTicketsByFlightId(int flightId)
+        public async Task<List<Ticket>> GetTicketsByFlightId(long flightId)
         {
             var tickets = await _context.Tickets.Where(ticket => ticket.FlightId == flightId)
                 .Include(ticket => ticket.Passenger)

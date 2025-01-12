@@ -14,7 +14,7 @@ USE `airline_project`;
 -- Table `airline_project`.`airlines`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`airlines` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`airlines` (
 -- Table `airline_project`.`airplanes`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`airplanes` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(80) NOT NULL,
-  `airplanes_airline_id` INT NOT NULL,
+  `airplanes_airline_id` BIGINT NOT NULL,
   `economy_class_seats` INT NOT NULL,
   `business_class_seats` INT NOT NULL,
   `first_class_seats` INT NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`airplanes` (
 -- Table `airline_project`.`states`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`states` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(2) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
@@ -49,9 +49,9 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`states` (
 -- Table `airline_project`.`cities`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`cities` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
-  `state_id` INT NOT NULL,
+  `state_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `state_id_idx` (`state_id` ASC) VISIBLE,
   CONSTRAINT `state_id`
@@ -63,10 +63,10 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`cities` (
 -- Table `airline_project`.`airports`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`airports` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(120) NOT NULL,
   `code` VARCHAR(20) NOT NULL,
-  `city_id` INT NULL DEFAULT NULL,
+  `city_id` BIGINT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `city_id_idx` (`city_id` ASC) VISIBLE,
   CONSTRAINT `city_id`
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`airports` (
 -- Table `airline_project`.`users`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`users` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(80) NOT NULL,
   `password` VARCHAR(100) NOT NULL,
   `role` VARCHAR(8) NOT NULL,
@@ -90,9 +90,9 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`users` (
 -- Table `airline_project`.`bookings`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`bookings` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `confirmation_number` VARCHAR(45) NOT NULL,
-  `user_id` INT NOT NULL,
+  `user_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `user_id_idx` (`user_id` ASC) VISIBLE,
   CONSTRAINT `user_id`
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`bookings` (
 -- Table `airline_project`.`flight_classes`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`flight_classes` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `price_multiplier` DECIMAL(3, 2),
   PRIMARY KEY (`id`)
@@ -114,10 +114,10 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flight_classes` (
 -- Table `airline_project`.`flights`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `flight_code` VARCHAR(45) NOT NULL,
-  `departure_port` INT NOT NULL,
-  `arrival_port` INT NOT NULL,
+  `departure_port` BIGINT NOT NULL,
+  `arrival_port` BIGINT NOT NULL,
   `departure_time` DATETIME NOT NULL,
   `completion_time` DATETIME NOT NULL,
   `travel_time` INT NOT NULL,
@@ -126,9 +126,12 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
   `economy_class_seats_available` INT NOT NULL,
   `business_class_seats_available` INT NOT NULL,
   `first_class_seats_available` INT NOT NULL,
-  `flights_airline_id` INT NOT NULL,
-  `flights_airplane_id` INT NOT NULL,
+  `flights_airline_id` BIGINT NOT NULL,
+  `flights_airplane_id` BIGINT NOT NULL,
   `idempotency_key` VARCHAR(60) NOT NULL,
+  `created_by` VARCHAR(100) NOT NULL,
+  `updated_by` VARCHAR(100) NOT NULL,
+  `version` INT NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   INDEX `departure_port_idx` (`departure_port` ASC) VISIBLE,
   INDEX `arrival_port_idx` (`arrival_port` ASC) VISIBLE,
@@ -151,10 +154,26 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`flights` (
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
 -- -----------------------------------------------------
+-- Table `airline_project`.`flights_audit`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `airline_project`.`flights_audit` (
+    `audit_id` BIGINT NOT NULL AUTO_INCREMENT,
+    `flight_id` BIGINT NOT NULL,
+    `column_name` VARCHAR(255) NOT NULL,
+    `old_value` TEXT NULL,
+    `new_value` TEXT NULL,
+    `operation` ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+    `done_by` VARCHAR(100) NULL,
+    `operation_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`audit_id`),
+    INDEX `flight_id_idx` (`flight_id` ASC)
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
+
+-- -----------------------------------------------------
 -- Table `airline_project`.`passengers`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(80) NOT NULL,
   `last_name` VARCHAR(120) NOT NULL,
   `email` VARCHAR(320) NOT NULL,
@@ -165,13 +184,13 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`passengers` (
 -- Table `airline_project`.`tickets`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
-  `id` INT NOT NULL AUTO_INCREMENT,
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
   `price` DECIMAL(5, 2) NOT NULL,
   `ticket_number` VARCHAR(45) NOT NULL,
-  `passenger_id` INT NOT NULL,
-  `flight_id` INT NOT NULL,
-  `tickets_booking_id` INT NOT NULL,
-  `tickets_class_id` INT NOT NULL,
+  `passenger_id` BIGINT NOT NULL,
+  `flight_id` BIGINT NOT NULL,
+  `tickets_booking_id` BIGINT NOT NULL,
+  `tickets_class_id` BIGINT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `passenger_id_idx` (`passenger_id` ASC) VISIBLE,
   INDEX `flight_id_idx` (`flight_id` ASC) VISIBLE,
@@ -191,27 +210,27 @@ CREATE TABLE IF NOT EXISTS `airline_project`.`tickets` (
     REFERENCES `airline_project`.`flight_classes` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3;
 
-
 -- Create stored procedures
 
 -- CheckAndInsertFlight stored procedure
 DELIMITER $$
 CREATE DEFINER=`root`@`%` PROCEDURE `CheckAndInsertFlight`(
-    IN airplaneId INT,
+    IN airplaneId BIGINT,
     IN departureTime DATETIME,
     IN completionTime DATETIME,
     IN flightCode VARCHAR(45),
-    IN departurePort INT,
-    IN arrivalPort INT,
+    IN departurePort BIGINT,
+    IN arrivalPort BIGINT,
     IN travelTime INT,
     IN price DECIMAL(10, 2),
     IN kilometers INT,
     IN economySeats INT,
     IN businessSeats INT,
     IN firstClassSeats INT,
-    IN airlineId INT,
+    IN airlineId BIGINT,
     IN idempotencyKey VARCHAR(60),
-    OUT newFlightId INT
+    IN createdBy VARCHAR(100),
+    OUT newFlightId BIGINT
 )
 BEGIN
     -- Start transaction
@@ -252,7 +271,9 @@ BEGIN
             flights_airline_id,
             flights_airplane_id,
             completion_time,
-            idempotency_key
+            idempotency_key,
+            created_by,
+            updated_by
         )
         VALUES 
         (
@@ -269,7 +290,9 @@ BEGIN
             airlineId,
             airplaneId,
             completionTime,
-            idempotencyKey
+            idempotencyKey,
+            createdBy,
+            createdBy
         );
 
         -- Get the ID of the newly inserted flight
@@ -281,6 +304,79 @@ BEGIN
 END$$
 DELIMITER ;
 -- CheckAndInsertFlight stored procedure end
+
+-- Triggers for flight inserts, updates and deletes
+
+-- Insert trigger
+DELIMITER $$
+CREATE TRIGGER flights_after_insert
+AFTER INSERT ON `airline_project`.`flights`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `airline_project`.`flights_audit` (`flight_id`, `column_name`, `new_value`, `operation`, `done_by`)
+    VALUES 
+        (NEW.id, 'flight_code', NEW.flight_code, 'INSERT', NEW.created_by),
+        (NEW.id, 'departure_port', NEW.departure_port, 'INSERT', NEW.created_by),
+        (NEW.id, 'arrival_port', NEW.arrival_port, 'INSERT', NEW.created_by),
+        (NEW.id, 'departure_time', NEW.departure_time, 'INSERT', NEW.created_by),
+        (NEW.id, 'completion_time', NEW.completion_time, 'INSERT', NEW.created_by),
+        (NEW.id, 'travel_time', NEW.travel_time, 'INSERT', NEW.created_by),
+        (NEW.id, 'price', NEW.price, 'INSERT', NEW.created_by),
+        (NEW.id, 'kilometers', NEW.kilometers, 'INSERT', NEW.created_by),
+        (NEW.id, 'economy_class_seats_available', NEW.economy_class_seats_available, 'INSERT', NEW.created_by),
+        (NEW.id, 'business_class_seats_available', NEW.business_class_seats_available, 'INSERT', NEW.created_by),
+        (NEW.id, 'first_class_seats_available', NEW.first_class_seats_available, 'INSERT', NEW.created_by),
+        (NEW.id, 'flights_airline_id', NEW.flights_airline_id, 'INSERT', NEW.created_by),
+        (NEW.id, 'flights_airplane_id', NEW.flights_airplane_id, 'INSERT', NEW.created_by);
+END$$
+DELIMITER ;
+
+-- Update trigger
+DELIMITER $$
+CREATE TRIGGER flights_after_update
+AFTER UPDATE ON `airline_project`.`flights`
+FOR EACH ROW
+BEGIN
+    IF OLD.departure_time != NEW.departure_time THEN
+        INSERT INTO `airline_project`.`flights_audit` 
+            (`flight_id`, `column_name`, `old_value`, `new_value`, `operation`, `done_by`)
+        VALUES 
+            (NEW.id, 'departure_time', OLD.departure_time, NEW.departure_time, 'UPDATE', NEW.updated_by);
+    END IF;
+
+    IF OLD.completion_time != NEW.completion_time THEN
+        INSERT INTO `airline_project`.`flights_audit` 
+            (`flight_id`, `column_name`, `old_value`, `new_value`, `operation`, `done_by`)
+        VALUES 
+            (NEW.id, 'completion_time', OLD.completion_time, NEW.completion_time, 'UPDATE', NEW.updated_by);
+    END IF;
+END$$
+DELIMITER ;
+
+-- Delete trigger
+DELIMITER $$
+CREATE TRIGGER flights_after_delete
+AFTER DELETE ON `airline_project`.`flights`
+FOR EACH ROW
+BEGIN
+    INSERT INTO `airline_project`.`flights_audit` (`flight_id`, `column_name`, `old_value`, `operation`, `done_by`)
+    VALUES 
+        (OLD.id, 'flight_code', OLD.flight_code, 'DELETE', @deleted_by_email),
+        (OLD.id, 'departure_port', OLD.departure_port, 'DELETE', @deleted_by_email),
+        (OLD.id, 'arrival_port', OLD.arrival_port, 'DELETE', @deleted_by_email),
+        (OLD.id, 'departure_time', OLD.departure_time, 'DELETE', @deleted_by_email),
+        (OLD.id, 'completion_time', OLD.completion_time, 'DELETE', @deleted_by_email),
+        (OLD.id, 'travel_time', OLD.travel_time, 'DELETE', @deleted_by_email),
+        (OLD.id, 'price', OLD.price, 'DELETE', @deleted_by_email),
+        (OLD.id, 'kilometers', OLD.kilometers, 'DELETE', @deleted_by_email),
+        (OLD.id, 'economy_class_seats_available', OLD.economy_class_seats_available, 'DELETE', @deleted_by_email),
+        (OLD.id, 'business_class_seats_available', OLD.business_class_seats_available, 'DELETE', @deleted_by_email),
+        (OLD.id, 'first_class_seats_available', OLD.first_class_seats_available, 'DELETE', @deleted_by_email),
+        (OLD.id, 'flights_airline_id', OLD.flights_airline_id, 'DELETE', @deleted_by_email),
+        (OLD.id, 'flights_airplane_id', OLD.flights_airplane_id, 'DELETE', @deleted_by_email);
+END$$
+DELIMITER ;
+
 
 
 -- -----------------------------------------------------

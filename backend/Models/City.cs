@@ -6,11 +6,11 @@ namespace backend.Models;
 
 public partial class City
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public string Name { get; set; } = null!;
 
-    public int StateId { get; set; }
+    public long StateId { get; set; }
 
     [JsonIgnore]
     public virtual ICollection<Airport> Airports { get; set; } = new List<Airport>();

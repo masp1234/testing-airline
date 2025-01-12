@@ -6,7 +6,7 @@ namespace backend.Models;
 
 public partial class State
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     public string Code { get; set; } = null!;
 

@@ -16,7 +16,7 @@ namespace backend.Repositories
             return airports;
         }
 
-        public async Task<List<Airport>> FindByIds(params int[] ids)
+        public async Task<List<Airport>> FindByIds(params long[] ids)
         {
             var airports = await _context.Airports
                 .Where((airport) => ids.Contains(airport.Id))

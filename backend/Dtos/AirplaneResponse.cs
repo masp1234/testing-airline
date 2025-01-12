@@ -2,11 +2,11 @@
 {
     public class AirplaneResponse
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public string Name { get; set; } = null!;
 
-        public int AirplanesAirlineId { get; set; }
+        public long AirplanesAirlineId { get; set; }
 
         public int EconomyClassSeats { get; set; }
 
