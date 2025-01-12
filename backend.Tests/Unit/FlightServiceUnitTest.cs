@@ -306,7 +306,7 @@ namespace backend.Tests.Unit
         public async Task GetFlightClassById_ReturnsNull_WhenFlightClassDoesNotExist()
         {
             var flightClassId = 4;
-            _mockFlightRepository.Setup(repo => repo.GetFlightClassById(flightClassId)).ReturnsAsync((FlightClass)null);
+            _mockFlightRepository.Setup(repo => repo.GetFlightClassById(flightClassId)).ReturnsAsync((FlightClass?)null);
 
             var flightClass = await _flightService.GetFlightClassById(flightClassId);
 
