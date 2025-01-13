@@ -15,7 +15,7 @@ namespace backend.Services
         }
 
         // Adds together the ticket amount per flight class and id
-        public void AddAmountOfTicketsForFlightIdAndFlightClass(int flightId, FlightClassName flightClassName)
+        public void AddTicketForFlightIdAndFlightClass(int flightId, FlightClassName flightClassName)
         {
             var flightIdAndClassName = (flightId, flightClassName);
             if (ticketClassesPerFlight.ContainsKey(flightIdAndClassName))
