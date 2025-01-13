@@ -14,16 +14,13 @@ namespace backend.Tests.Integration
         private readonly IBookingService _bookingService;
         private readonly Mock<IFlightService> _mockFlightService;
         private readonly Mock<IUserService> _mockUserService ;
-        private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<ITicketAvailabilityChecker> _mockTicketAvailabilityChecker;
 
         private readonly FlightClass _flightClass = new()
         {
             Id = 1,
             Name = FlightClassName.EconomyClass
-        }
-
-        ;
+        };
 
         private readonly Airplane _existingAirplane = new()
         {
@@ -112,7 +109,6 @@ namespace backend.Tests.Integration
         public BookingServiceIntegrationTests(TestDatabaseFixture dbFixture )
         {
             _mockFlightService = new Mock<IFlightService>();
-            _mockEmailService = new Mock<IEmailService>();
             _mockTicketAvailabilityChecker = new Mock<ITicketAvailabilityChecker>();
             _mockUserService = new Mock<IUserService>();
             _dbFixture = dbFixture;
@@ -124,7 +120,7 @@ namespace backend.Tests.Integration
 
             IMapper mapper = configuration.CreateMapper();
 
-            _bookingService = new BookingService(_mockUserService.Object, _mockFlightService.Object, _mockEmailService.Object, new BookingRepository(_dbFixture.DbContext, mapper), mapper,  _mockTicketAvailabilityChecker.Object );
+            _bookingService = new BookingService(_mockUserService.Object, _mockFlightService.Object, new BookingRepository(_dbFixture.DbContext, mapper), mapper,  _mockTicketAvailabilityChecker.Object );
 
             _dbFixture.ResetDatabase();
             _dbFixture.DbContext.ChangeTracker.Clear();

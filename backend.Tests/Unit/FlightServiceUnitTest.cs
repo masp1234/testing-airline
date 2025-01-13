@@ -12,7 +12,6 @@ namespace backend.Tests.Unit
     {
         private readonly IFlightService _flightService;
         private readonly Mock<IDistanceApiService> _mockDistanceApiService;
-        private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<IAirplaneService> _mockAirplaneService;
         private readonly Mock<IFlightRepository> _mockFlightRepository;
         private readonly Mock<IAirportRepository> _airportRepository ;
@@ -187,9 +186,8 @@ namespace backend.Tests.Unit
 
             _mockAirplaneService = new Mock<IAirplaneService>();
             _mockDistanceApiService = new Mock<IDistanceApiService>();
-            _mockEmailService = new Mock<IEmailService>();
 
-            _flightService = new FlightService(_mockFlightRepository.Object, mapper, _mockDistanceApiService.Object, _airportRepository.Object, _mockEmailService.Object, _mockAirplaneService.Object );
+            _flightService = new FlightService(_mockFlightRepository.Object, mapper, _mockDistanceApiService.Object, _airportRepository.Object, _mockAirplaneService.Object );
         }
 
         [Fact]
