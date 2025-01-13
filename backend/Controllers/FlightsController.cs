@@ -92,22 +92,24 @@ namespace backend.Controllers
 		{
 			try
 			{
-			
                 var existingFlight = await _flightService.GetFlightById(id);
                 if (existingFlight == null)
                 {
                     return NotFound(new { message = $"No flight with ID '{id}' was found." });
                 }
-                bool updatedSuccessfully = await _flightService.UpdateFlight(updateFlightRequest, existingFlight);
-				if (!updatedSuccessfully)
-				{
-					return Conflict(new { message = $"Could not update the flight because there were conflicting flight schedules." });
-				}
+
+				await _flightService.UpdateFlight(updateFlightRequest, existingFlight);
+
                 return Ok(new { message = "The flight was updated successfully." });
 
             }
             catch (Exception ex)
             {
+				if (ex.Message.Contains("1 or more overlapping"))
+				{
+					return Conflict(new { message = "Could not update the flight because there were conflicting flight schedules." });
+				}
+
                 Console.WriteLine(ex);
                 SentrySdk.CaptureException(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while trying to update flight." });

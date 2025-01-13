@@ -166,12 +166,5 @@ namespace backend.Services
                 throw new Exception("An error occured while trying to send email to passengers regarding cancellation of flight.");
             }
         }
-        
-        public async Task ChangeFlight()
-        {
-            var dummyPassenger = new List<Passenger> { new() { Email = "" } };
-            await _emailService.SendFlightEmailAsync(dummyPassenger, FlightStatus.Changed);
-        }
-
     }
 }

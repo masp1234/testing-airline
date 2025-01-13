@@ -1,4 +1,3 @@
-using System.Net.Http;
 using AutoMapper;
 using backend.Config;
 using backend.Dtos;
@@ -19,7 +18,6 @@ namespace backend.Tests.Integration
             Id = 1,
             Name = FlightClassName.EconomyClass
         };
-
         private readonly Airplane _existingAirplane = new()
         {
             Id = 1,
@@ -126,6 +124,7 @@ namespace backend.Tests.Integration
 
             _bookingService = new BookingService(userService, flightService, emailService, new BookingRepository(_dbFixture.DbContext, mapper), mapper, ticketAvailabilityChecker );
 
+
             _dbFixture.ResetDatabase();
             _dbFixture.DbContext.ChangeTracker.Clear();
             _dbFixture.DbContext.Bookings.Add(_existingBooking1);
@@ -147,6 +146,7 @@ namespace backend.Tests.Integration
         {
             var Bookings = await _bookingService.GetBookingsByUserEmail(_existingUser1.Email);
 
+
             Assert.True(Bookings.IsSucces);
             Assert.NotNull(Bookings.Data);
             Assert.Equal(2, Bookings.Data.Count);
@@ -159,6 +159,7 @@ namespace backend.Tests.Integration
         {
             var Bookings = await _bookingService.GetBookingsByUserEmail(_existingUser2.Email);
 
+
             Assert.True(Bookings.IsSucces);
             Assert.NotNull(Bookings.Data);
             Assert.Empty(Bookings.Data);
@@ -169,6 +170,7 @@ namespace backend.Tests.Integration
         {
             var email = "test1000@example.com";
             
+
             var Bookings = await _bookingService.GetBookingsByUserEmail(email);
 
             Assert.False(Bookings.IsSucces);
@@ -192,7 +194,6 @@ namespace backend.Tests.Integration
                     new TicketCreationRequest { FlightId = 1, FlightClassId = 1 }
                 ]
             };
-
 
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
@@ -221,7 +222,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task CreateBooking_ReturnsFailure_WhenFlightClassNotFound()
         {
-
             var bookingRequest = new BookingCreationRequest
             {
                 Email = _existingUser1.Email,
@@ -270,7 +270,6 @@ namespace backend.Tests.Integration
                 ]
             };
 
-
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
             Assert.False(booking.IsSucces);
@@ -306,6 +305,7 @@ namespace backend.Tests.Integration
             Assert.NotNull(result.Data);
             Assert.Equal("The booking was created successfully.", result.Message);
         }
+
 
     }
 }
