@@ -16,7 +16,6 @@ namespace backend.Tests.Integration
         private readonly IFlightRepository _flightRepository;
         private readonly Mock<IDistanceApiService> _mockDistanceApiService;
 
-        private readonly Mock<IAirplaneService> _mockAirplaneService;
         private readonly User _existingUser1 = new()
         {
             Id = 1, 
@@ -136,15 +135,14 @@ namespace backend.Tests.Integration
 
 
             IMapper mapper = configuration.CreateMapper();
-            IFlightRepository flightRepository =new FlightRepository(_dbFixture.DbContext);
+            _flightRepository = new FlightRepository(_dbFixture.DbContext);
             
             _mockDistanceApiService = new Mock<IDistanceApiService>();
             
-            IEmailService emailService = new EmailService();
             
-            IAirplaneService airplaneService = new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper);
+            IAirplaneService airplaneService = new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), _flightRepository, mapper);
 
-            _flightService = new FlightService(flightRepository, mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), emailService, airplaneService);
+            _flightService = new FlightService(_flightRepository, mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), airplaneService);
 
 
             _dbFixture.ResetDatabase();

@@ -112,18 +112,17 @@ namespace backend.Tests.Integration
             });
 
             IFlightRepository flightRepository =new FlightRepository(_dbFixture.DbContext);
-            IEmailService emailService = new EmailService();
             IMapper mapper = configuration.CreateMapper();
 
             IUserService userService = new UserService(new UserRepository(_dbFixture.DbContext),  new PasswordHasher<User>(), mapper );
 
             Mock<IDistanceApiService> mockDistanceApiService = new();
 
-            IFlightService flightService = new FlightService(flightRepository, mapper, mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), emailService, new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper));
+            IFlightService flightService = new FlightService(flightRepository, mapper, mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper));
 
             ITicketAvailabilityChecker ticketAvailabilityChecker = new TicketAvailabilityChecker();
 
-            _bookingService = new BookingService(userService, flightService, emailService, new BookingRepository(_dbFixture.DbContext, mapper), mapper, ticketAvailabilityChecker );
+            _bookingService = new BookingService(userService, flightService, new BookingRepository(_dbFixture.DbContext, mapper), mapper, ticketAvailabilityChecker );
 
 
 
