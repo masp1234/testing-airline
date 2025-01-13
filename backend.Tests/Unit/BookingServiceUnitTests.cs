@@ -14,7 +14,6 @@ namespace backend.Tests.Unit
         private readonly IBookingService _bookingService;
         private readonly Mock<IFlightService> _mockFlightService;
         private readonly Mock<IUserService> _mockUserService ;
-        private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<IBookingRepository> _mockBookingRepository;
         private readonly Mock<ITicketAvailabilityChecker> _mockTicketAvailabilityChecker;
 
@@ -60,7 +59,6 @@ namespace backend.Tests.Unit
         public BookingServiceUnitTests()
         {
             _mockFlightService = new Mock<IFlightService>();
-            _mockEmailService = new Mock<IEmailService>();
             _mockBookingRepository = new Mock<IBookingRepository>();
             _mockTicketAvailabilityChecker = new Mock<ITicketAvailabilityChecker>();
             _mockUserService = new Mock<IUserService>();
@@ -72,7 +70,7 @@ namespace backend.Tests.Unit
 
             IMapper mapper = configuration.CreateMapper();
 
-            _bookingService = new BookingService(_mockUserService.Object, _mockFlightService.Object, _mockEmailService.Object, _mockBookingRepository.Object, mapper,  _mockTicketAvailabilityChecker.Object );
+            _bookingService = new BookingService(_mockUserService.Object, _mockFlightService.Object, _mockBookingRepository.Object, mapper,  _mockTicketAvailabilityChecker.Object );
 
 
         }

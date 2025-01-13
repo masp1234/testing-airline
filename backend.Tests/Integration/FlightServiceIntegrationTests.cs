@@ -4,6 +4,7 @@ using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
 using backend.Services;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace backend.Tests.Integration
@@ -12,7 +13,22 @@ namespace backend.Tests.Integration
     {
         private readonly TestDatabaseFixture _dbFixture;
         private readonly IFlightService _flightService;
+        private readonly IFlightRepository _flightRepository;
         private readonly Mock<IDistanceApiService> _mockDistanceApiService;
+
+        private readonly Mock<IAirplaneService> _mockAirplaneService;
+        private readonly User _existingUser1 = new()
+        {
+            Id = 1, 
+            Email = "test1@example.com",
+            Password = "123123"
+        };
+        private readonly FlightClass _flightClass = new()
+        {
+            Id = 1,
+            Name = FlightClassName.EconomyClass
+        };
+        
         private readonly Airplane _existingAirplane = new()
         {
             Id = 1,
@@ -82,6 +98,33 @@ namespace backend.Tests.Integration
             FlightsAirlineId= 1 ,
             FlightsAirplaneId = 1,
         };
+        private readonly Booking _existingBooking = new()
+        {
+            Id = 1,
+            ConfirmationNumber = "ConfirmationNumber2323",
+            UserId = 1
+        };
+        private readonly Ticket _ticket1 = new() 
+        {
+            Id = 1,
+            TicketsBookingId = 1,
+            FlightId = 2,
+            FlightClassId = 1,
+            TicketNumber = "TicketNumber1",
+            Passenger = new Passenger { Id = 1, FirstName = "John", LastName= "Doe", Email= "testemail@test.com" },
+                             
+            };
+            private readonly Ticket _ticket2 =new() 
+            {
+                Id = 2,
+                TicketsBookingId = 1,
+                FlightId = 2,
+                FlightClassId = 1,
+                TicketNumber = "TicketNumber2",
+                Passenger = new Passenger { Id = 2, FirstName = "Lars", LastName= "Doe", Email= "testemail2@test.com"}
+        };
+                             
+
 
         public FlightServiceIntegrationTests(TestDatabaseFixture dbFixture )
         {
@@ -96,11 +139,13 @@ namespace backend.Tests.Integration
             IFlightRepository flightRepository =new FlightRepository(_dbFixture.DbContext);
             
             _mockDistanceApiService = new Mock<IDistanceApiService>();
+            
             IEmailService emailService = new EmailService();
             
             IAirplaneService airplaneService = new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper);
 
             _flightService = new FlightService(flightRepository, mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), emailService, airplaneService);
+
 
             _dbFixture.ResetDatabase();
 
@@ -110,6 +155,7 @@ namespace backend.Tests.Integration
             _dbFixture.DbContext.Airports.Add(_existingAirport2);
             _dbFixture.DbContext.Airplanes.Add(_existingAirplane);
             _dbFixture.DbContext.Airlines.Add(_existingAirline);
+            _dbFixture.DbContext.FlightClasses.Add(_flightClass);
             _dbFixture.DbContext.SaveChanges();
             _dbFixture.DbContext.ChangeTracker.Clear();
         }
@@ -127,9 +173,9 @@ namespace backend.Tests.Integration
             _dbFixture.DbContext.Flights.Remove(_existingFlight);
             await _dbFixture.DbContext.SaveChangesAsync();
 
-            var users = await _flightService.GetAllFlights();
+            var flights = await _flightService.GetAllFlights();
 
-            Assert.Empty(users);
+            Assert.Empty(flights);
         }
 
         [Fact]
@@ -453,6 +499,48 @@ namespace backend.Tests.Integration
 
             Assert.Empty(flights);
         }
+        public async Task CancelFlight_ShouldDeleteFlightAndRelatedEntities()
+        {
+
+            _dbFixture.DbContext.Users.Add(_existingUser1);
+            _dbFixture.DbContext.Flights.Add(_existingFlight2);
+            _dbFixture.DbContext.Bookings.Add(_existingBooking);
+            _dbFixture.DbContext.Tickets.Add(_ticket1);
+            _dbFixture.DbContext.Tickets.Add(_ticket2);
+            _dbFixture.DbContext.SaveChanges();
+
+            await _flightService.CancelFlight(_existingFlight2.Id);
+
+            var deletedFlight = await _flightService.GetFlightById(_existingFlight2.Id);
+
+            var deletedTickets = await _flightRepository.GetTicketsByFlightId(_existingFlight2.Id);
+            var deletedPassenger1 = await _dbFixture.DbContext.Passengers.FindAsync(1);
+            var deletedPassenger2 =await _dbFixture.DbContext.Passengers.FindAsync(2);
+
+            Assert.Null(deletedFlight);
+            Assert.Empty(deletedTickets);
+            Assert.Null(deletedPassenger1);
+            Assert.Null(deletedPassenger2);
+        }
+
+        [Fact]
+        public async Task GetFlightClassById_ShouldReturnFlightClass_WhenIdExists()
+        {
+
+            var flightClass = await _flightService.GetFlightClassById(1);
+
+            Assert.NotNull(flightClass);
+            Assert.Equal(FlightClassName.EconomyClass, flightClass.Name);
+        }
+
+        [Fact]
+        public async Task GetFlightClassById_ShouldReturnNull_WhenIdDoesNotExist()
+        {
+            var flightClass = await _flightService.GetFlightClassById(1999);
+
+            Assert.Null(flightClass);
+        }
+
     }
 
 }   

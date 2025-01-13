@@ -8,7 +8,6 @@ namespace backend.Services
     public class BookingService(
         IUserService userService,
         IFlightService flightService,
-        IEmailService emailService,
         IBookingRepository bookingRepository,
         IMapper mapper,
         ITicketAvailabilityChecker ticketAvailabilityChecker
@@ -16,7 +15,6 @@ namespace backend.Services
     {
         private readonly IUserService _userService = userService;
         private readonly IFlightService _flightService = flightService;
-        private readonly IEmailService _emailService = emailService;
         private readonly IBookingRepository _bookingRepository = bookingRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ITicketAvailabilityChecker _ticketAvailabilityChecker = ticketAvailabilityChecker;
@@ -78,7 +76,6 @@ namespace backend.Services
             bookingProcessedRequest.ConfirmationNumber = GenerateUniqueString();
             bookingProcessedRequest.UserId = user.Id;
             var createdBooking = await _bookingRepository.CreateBooking(bookingProcessedRequest);
-            await _emailService.SendBookingConfirmationMail(bookingProcessedRequest);
             var mappedBooking = _mapper.Map<BookingResponse>(createdBooking);
             return ServiceResult<BookingResponse>.Success(mappedBooking, "The booking was created successfully.");
         }

@@ -18,6 +18,7 @@ namespace backend.Tests.Integration
             Id = 1,
             Name = FlightClassName.EconomyClass
         };
+
         private readonly Airplane _existingAirplane = new()
         {
             Id = 1,
@@ -123,6 +124,7 @@ namespace backend.Tests.Integration
             ITicketAvailabilityChecker ticketAvailabilityChecker = new TicketAvailabilityChecker();
 
             _bookingService = new BookingService(userService, flightService, emailService, new BookingRepository(_dbFixture.DbContext, mapper), mapper, ticketAvailabilityChecker );
+
 
 
             _dbFixture.ResetDatabase();

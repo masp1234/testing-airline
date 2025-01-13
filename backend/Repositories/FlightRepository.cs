@@ -1,7 +1,6 @@
 ﻿using backend.Database;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
-using MySqlConnector;
 using System.Data;
 
 namespace backend.Repositories
@@ -61,16 +60,6 @@ namespace backend.Repositories
 
         public async Task<Flight> Create(Flight flight)
         {
-
-            // Check for overlapping flights
-            var overlappingFlight = await GetFlightsByAirplaneIdAndTimeInterval(flight);
-
-            if (overlappingFlight.Count > 0)
-            {
-                // Rollback if overlap is detected
-                throw new InvalidOperationException("Overlap detected with existing flight schedule.");
-            }
-            // Insert the new flight
             var newFlight = new Flight
             {
                 FlightCode = flight.FlightCode,
@@ -140,16 +129,7 @@ namespace backend.Repositories
 
             // Removing flight
             _context.Flights.Remove(flight);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new DbUpdateException("Database Error: could not delete flight", ex);
-            }
-
+            await _context.SaveChangesAsync();
 
             return flight;
         }
@@ -197,12 +177,6 @@ namespace backend.Repositories
         {
             try
             {
-                var overLappingFlights = await GetFlightsByAirplaneIdAndTimeInterval(flightToUpdate);
-
-                if (overLappingFlights.Any(flight => flight.Id != flightToUpdate.Id))
-                {
-                    throw new Exception("Update denied, there were overlapping flights");
-                }
                 _context.Flights.Update(flightToUpdate);
                 await _context.SaveChangesAsync();
                 return true;
