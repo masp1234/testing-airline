@@ -65,7 +65,7 @@ namespace backend.Services
                 ticket.FlightPrice = CalculateTicketPrice(flight, flightClass);
 
                 
-                _ticketAvailabilityChecker.AddAmountOfTicketsForFlightIdAndFlightClass(ticket.FlightId, ticket.FlightClassName);
+                _ticketAvailabilityChecker.AddTicketForFlightIdAndFlightClass(ticket.FlightId, ticket.FlightClassName);
                 _ticketAvailabilityChecker.AddFlight(flight);
             }
 
