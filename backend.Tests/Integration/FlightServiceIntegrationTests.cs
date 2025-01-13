@@ -13,8 +13,6 @@ namespace backend.Tests.Integration
         private readonly TestDatabaseFixture _dbFixture;
         private readonly IFlightService _flightService;
         private readonly Mock<IDistanceApiService> _mockDistanceApiService;
-        private readonly Mock<IEmailService> _mockEmailService;
-        private readonly Mock<IAirplaneService> _mockAirplaneService;
         private readonly Airplane _existingAirplane = new()
         {
             Id = 1,
@@ -96,11 +94,14 @@ namespace backend.Tests.Integration
 
 
             IMapper mapper = configuration.CreateMapper();
-            _mockAirplaneService = new Mock<IAirplaneService>();
+            IFlightRepository flightRepository =new FlightRepository(_dbFixture.DbContext);
+            
             _mockDistanceApiService = new Mock<IDistanceApiService>();
-            _mockEmailService = new Mock<IEmailService>();
+            IEmailService emailService = new EmailService();
+            
+            IAirplaneService airplaneService = new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper);
 
-            _flightService = new FlightService(new FlightRepository(_dbFixture.DbContext), mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), _mockEmailService.Object, _mockAirplaneService.Object);
+            _flightService = new FlightService(flightRepository, mapper , _mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), emailService, airplaneService);
 
             _dbFixture.ResetDatabase();
 
@@ -175,16 +176,10 @@ namespace backend.Tests.Integration
                 DepartureDateTime = DateTime.UtcNow.AddDays(100)
             };
 
-            _mockAirplaneService.Setup(service => service.GetAirplaneById(flightCreationRequest.AirplaneId))
-                                .ReturnsAsync(_existingAirplane);
+            _mockDistanceApiService.Setup(service => service.GetDistanceData(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(500000);
 
-            _mockDistanceApiService.Setup(service => service.GetDistanceData(It.IsAny<string>(), It.IsAny<string>()))
-                           .ReturnsAsync(500000);
-
-            // Act
             var flight = await _flightService.CreateFlight(flightCreationRequest);
 
-            // Assert
             Assert.NotNull(flight);
             Assert.Equal(flightCreationRequest.IdempotencyKey, flight.IdempotencyKey);
             Assert.Equal(flightCreationRequest.AirlineId, flight.FlightsAirlineId);
@@ -212,11 +207,9 @@ namespace backend.Tests.Integration
                     DepartureDateTime = new DateTime(2025, 1, 24, hour, minutes, 0),
                 };
 
-            _mockAirplaneService.Setup(service => service.GetAirplaneById(flightCreationRequest.AirplaneId))
-                                .ReturnsAsync(_existingAirplane);
 
-            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name))
-                        .ReturnsAsync(500000);
+            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name)).ReturnsAsync(500000);
+
             await Assert.ThrowsAsync<Exception>(() => _flightService.CreateFlight(flightCreationRequest));
           
         }
@@ -234,16 +227,11 @@ namespace backend.Tests.Integration
                 DepartureDateTime = new DateTime(2025, 1, 24, 12, 1, 0)
             };
 
-            _mockAirplaneService.Setup(service => service.GetAirplaneById(flightCreationRequest.AirplaneId))
-                                .ReturnsAsync(_existingAirplane);
 
-            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name))
-                           .ReturnsAsync(500000);
+            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name)).ReturnsAsync(500000);
 
-            // Act
             var flight = await _flightService.CreateFlight(flightCreationRequest);
 
-            // Assert
             Assert.NotNull(flight);
             Assert.Equal(flightCreationRequest.IdempotencyKey, flight.IdempotencyKey);
             Assert.Equal(flightCreationRequest.AirlineId, flight.FlightsAirlineId);
@@ -268,14 +256,7 @@ namespace backend.Tests.Integration
                 DepartureDateTime = DateTime.UtcNow.AddDays(100)
             };
 
-
-            _mockAirplaneService.Setup(service => service.GetAirplaneById(flightCreationRequest.AirplaneId))
-                                .ReturnsAsync(_existingAirplane);
-
-
-
-            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name))
-                                .ReturnsAsync(500000); // 500 kilometers
+            _mockDistanceApiService.Setup(service => service.GetDistanceData(_existingAirport1.Name, _existingAirport2.Name)).ReturnsAsync(500000); // 500 kilometers
 
             var createdFlight = await _flightService.CreateFlight(flightCreationRequest);
 
@@ -300,7 +281,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task UpdateFlight_ReturnsFalse_WhenUpdateFails()
         {
-            // Arrange
             var updateFlightRequest = new UpdateFlightRequest
             {
                 DepartureDateTime = new DateTime(2025, 1, 25, 8, 0, 0),
@@ -323,7 +303,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task UpdateFlight_CalculatesCompletionTimeCorrectly()
         {
-            // Arrange
             var updateFlightRequest = new UpdateFlightRequest
             {
                 DepartureDateTime = new DateTime(2025, 1, 25, 8, 0, 0),
