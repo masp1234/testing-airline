@@ -56,8 +56,8 @@ namespace backend.Services
             Flight flight = _mapper.Map<Flight>(flightCreationRequest);
             flight.FlightCode = "123FLIGHTCODE";
             var airports = await _airportRepository.FindByIds(flight.DeparturePort, flight.ArrivalPort);
-            Airport? originAirport = airports.Find((airport => airport.Id == flight.DeparturePort));
-            Airport? arrivalAirport = airports.Find((airport => airport.Id == flight.ArrivalPort));
+            Airport? originAirport = airports.Find((airport => airport.Id == flightCreationRequest.DepartureAirportId));
+            Airport? arrivalAirport = airports.Find((airport => airport.Id == flightCreationRequest.ArrivalAirportId));
             if (originAirport == null || arrivalAirport == null) {
                 throw new InvalidDataException("Could not find origin airport or arrival airport.");
             }
