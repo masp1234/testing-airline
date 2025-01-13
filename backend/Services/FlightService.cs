@@ -11,7 +11,6 @@ namespace backend.Services
         IMapper mapper,
         IDistanceApiService distanceApiService,
         IAirportRepository airportRepository,
-        IEmailService emailService,
         IAirplaneService airplaneService
             ) : IFlightService
     {
@@ -19,7 +18,6 @@ namespace backend.Services
         private readonly IMapper _mapper = mapper;
         private readonly IDistanceApiService _distanceApiService = distanceApiService;
         private readonly IAirportRepository _airportRepository = airportRepository;
-        private readonly IEmailService _emailService = emailService;
         private readonly IAirplaneService _airplaneService = airplaneService;
 
         public async Task<List<FlightResponse>> GetAllFlights()
@@ -141,7 +139,6 @@ namespace backend.Services
                 var flightPassengers = flightTickets
                     .Select(ticket => ticket.Passenger)
                     .ToList();
-                await _emailService.SendFlightEmailAsync(flightPassengers, FlightStatus.Changed);
                 return true;
             }
             return false;
@@ -154,17 +151,7 @@ namespace backend.Services
             {
                 throw new Exception("Flight could not be found."); // Could potentially define more specific exceptions (EntityNotfoundException)
             }
-            var passengers = deletedFlight.Tickets.Select(ticket => ticket.Passenger).ToList();
-            try
-            {
-                await _emailService.SendFlightEmailAsync(passengers, FlightStatus.Cancelled);
-            }
             
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                throw new Exception("An error occured while trying to send email to passengers regarding cancellation of flight.");
-            }
         }
     }
 }
