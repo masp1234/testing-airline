@@ -4,6 +4,7 @@ using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
 using backend.Services;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 
 namespace backend.Tests.Integration
@@ -12,10 +13,6 @@ namespace backend.Tests.Integration
     {
         private readonly TestDatabaseFixture _dbFixture;
         private readonly IBookingService _bookingService;
-        private readonly Mock<IFlightService> _mockFlightService;
-        private readonly Mock<IUserService> _mockUserService ;
-        private readonly Mock<ITicketAvailabilityChecker> _mockTicketAvailabilityChecker;
-
         private readonly FlightClass _flightClass = new()
         {
             Id = 1,
@@ -108,19 +105,26 @@ namespace backend.Tests.Integration
 
         public BookingServiceIntegrationTests(TestDatabaseFixture dbFixture )
         {
-            _mockFlightService = new Mock<IFlightService>();
-            _mockTicketAvailabilityChecker = new Mock<ITicketAvailabilityChecker>();
-            _mockUserService = new Mock<IUserService>();
             _dbFixture = dbFixture;
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new MappingProfile());
             });
 
-
+            IFlightRepository flightRepository =new FlightRepository(_dbFixture.DbContext);
             IMapper mapper = configuration.CreateMapper();
 
-            _bookingService = new BookingService(_mockUserService.Object, _mockFlightService.Object, new BookingRepository(_dbFixture.DbContext, mapper), mapper,  _mockTicketAvailabilityChecker.Object );
+            IUserService userService = new UserService(new UserRepository(_dbFixture.DbContext),  new PasswordHasher<User>(), mapper );
+
+            Mock<IDistanceApiService> mockDistanceApiService = new();
+
+            IFlightService flightService = new FlightService(flightRepository, mapper, mockDistanceApiService.Object, new AirportRepository(_dbFixture.DbContext), new AirplaneService(new AirplaneRepository(_dbFixture.DbContext), flightRepository, mapper));
+
+            ITicketAvailabilityChecker ticketAvailabilityChecker = new TicketAvailabilityChecker();
+
+            _bookingService = new BookingService(userService, flightService, new BookingRepository(_dbFixture.DbContext, mapper), mapper, ticketAvailabilityChecker );
+
+
 
             _dbFixture.ResetDatabase();
             _dbFixture.DbContext.ChangeTracker.Clear();
@@ -141,14 +145,8 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task GetBookingsByUserEmail_ReturnsBookings_WhenUserExists()
         {
-            var user = new UserResponse
-            {
-                Id = 1, 
-                Email = "test1@example.com"
-            };
-            _mockUserService.Setup(service => service.GetUserByEmail(user.Email)).ReturnsAsync(user);
+            var Bookings = await _bookingService.GetBookingsByUserEmail(_existingUser1.Email);
 
-            var Bookings = await _bookingService.GetBookingsByUserEmail(user.Email);
 
             Assert.True(Bookings.IsSucces);
             Assert.NotNull(Bookings.Data);
@@ -160,15 +158,8 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task GetBookingsByUserEmail_ReturnsEmptyList_WhenNoBookingsExist()
         {
-            var user = new UserResponse
-            {
-                Id = 2, 
-                Email = "test2@example.com"
-            };
+            var Bookings = await _bookingService.GetBookingsByUserEmail(_existingUser2.Email);
 
-            _mockUserService.Setup(service => service.GetUserByEmail(user.Email)).ReturnsAsync(user);
-
-            var Bookings = await _bookingService.GetBookingsByUserEmail(user.Email);
 
             Assert.True(Bookings.IsSucces);
             Assert.NotNull(Bookings.Data);
@@ -181,8 +172,6 @@ namespace backend.Tests.Integration
             var email = "test1000@example.com";
             
 
-            _mockUserService.Setup(service => service.GetUserByEmail(email)).ReturnsAsync((UserResponse?)null);
-
             var Bookings = await _bookingService.GetBookingsByUserEmail(email);
 
             Assert.False(Bookings.IsSucces);
@@ -193,21 +182,19 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task CreateBooking_ReturnsFailure_WhenUserNotFound()
         {
-            var user = new UserResponse
+            var notExistingUser = new UserResponse
             {
                 Id = 1999, 
                 Email = "nonexistent@example.com"
             };
             var bookingRequest = new BookingCreationRequest
             {
-                Email = user.Email,
+                Email = notExistingUser.Email,
                 Tickets =
                 [
                     new TicketCreationRequest { FlightId = 1, FlightClassId = 1 }
                 ]
             };
-
-            _mockUserService.Setup(service => service.GetUserByEmail(user.Email)).ReturnsAsync((UserResponse?) null);
 
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
@@ -218,14 +205,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task CreateBooking_ReturnsFailure_WhenFlightNotFound()
         {
-            var user = new UserResponse
-            {
-                Id = 1, 
-                Email = "test1@example.com"
-            };
-
-            _mockUserService.Setup(service => service.GetUserByEmail(user.Email)).ReturnsAsync(user);
-
             var bookingRequest = new BookingCreationRequest
             {
                 Email = _existingUser1.Email,
@@ -234,8 +213,6 @@ namespace backend.Tests.Integration
                     new TicketCreationRequest { FlightId = 999, FlightClassId = 1 }
                 ]
             };
-
-            _mockFlightService.Setup(service => service.GetFlightById(bookingRequest.Tickets[0].FlightId)).ReturnsAsync((Flight?)null);
 
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
@@ -246,11 +223,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task CreateBooking_ReturnsFailure_WhenFlightClassNotFound()
         {
-            var user = new UserResponse
-            {
-                Id = 1, 
-                Email = "test1@example.com"
-            };
             var bookingRequest = new BookingCreationRequest
             {
                 Email = _existingUser1.Email,
@@ -259,11 +231,6 @@ namespace backend.Tests.Integration
                     new TicketCreationRequest { FlightId = _existingFlight.Id, FlightClassId = 999 }
                 ]
             };
-            _mockUserService.Setup(service => service.GetUserByEmail(_existingUser1.Email)).ReturnsAsync(user);
-
-            _mockFlightService.Setup(service => service.GetFlightById(bookingRequest.Tickets[0].FlightId)).ReturnsAsync(_existingFlight);
-
-            _mockFlightService.Setup(service => service.GetFlightClassById(bookingRequest.Tickets[0].FlightClassId)).ReturnsAsync((FlightClass?) null);
 
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
@@ -274,11 +241,6 @@ namespace backend.Tests.Integration
         [Fact]
         public async Task CreateBooking_ReturnsFailure_WhenTicketsUnavailable()
         {
-            var user = new UserResponse
-            {
-                Id = 1, 
-                Email = "test1@example.com"
-            };
             var  unavailableTicketsFlight = new Flight
             {
                 Id = 100,
@@ -309,16 +271,6 @@ namespace backend.Tests.Integration
                 ]
             };
 
-            _mockUserService.Setup(service => service.GetUserByEmail(_existingUser1.Email)).ReturnsAsync(user);
-
-            _mockFlightService.Setup(service => service.GetFlightById(bookingRequest.Tickets[0].FlightId)).ReturnsAsync(unavailableTicketsFlight);
-
-            _mockFlightService.Setup(service => service.GetFlightClassById(bookingRequest.Tickets[0].FlightClassId)).ReturnsAsync(_flightClass);
-
-            _mockFlightService.Setup(service => service.GetFlightClassById(bookingRequest.Tickets[0].FlightClassId)).ReturnsAsync(_flightClass);
-
-            _mockTicketAvailabilityChecker.Setup(service => service.CheckTicketAvailability()).Returns(false);
-
             var booking = await _bookingService.CreateBooking(bookingRequest);
 
             Assert.False(booking.IsSucces);
@@ -326,53 +278,34 @@ namespace backend.Tests.Integration
         }
 
         [Fact]
-    public async Task CreateBooking_CreatesSuccessfully_WhenDataIsValid()
-    {
-        var user = new UserResponse
-            {
-                Id = 1, 
-                Email = "test1@example.com"
-            };
-            
-            var bookingRequest = new BookingCreationRequest
-            {
-                Email = _existingUser1.Email,
-                Tickets =
-                [
-                    new TicketCreationRequest
-                    {
-                        FlightId = _existingFlight.Id,
-                        FlightClassId = 1,
-                        Passenger = new PassengerCreationRequest
+        public async Task CreateBooking_CreatesSuccessfully_WhenDataIsValid()
+        {
+
+                var bookingRequest = new BookingCreationRequest
+                {
+                    Email = _existingUser1.Email,
+                    Tickets =
+                    [
+                        new TicketCreationRequest
                         {
-                            FirstName = "test",
-                            LastName = "testsen",
-                            Email = "test@testsen.dk"
+                            FlightId = _existingFlight.Id,
+                            FlightClassId = 1,
+                            Passenger = new PassengerCreationRequest
+                            {
+                                FirstName = "test",
+                                LastName = "testsen",
+                                Email = "test@testsen.dk"
+                            }
                         }
-                    }
-                ]
-            };
+                    ]
+                };
 
-            _mockUserService.Setup(service => service.GetUserByEmail(_existingUser1.Email)).ReturnsAsync(user);
+            var result = await _bookingService.CreateBooking(bookingRequest);
 
-            _mockFlightService.Setup(service => service.GetFlightById(bookingRequest.Tickets[0].FlightId)).ReturnsAsync(_existingFlight);
-
-            _mockFlightService.Setup(service => service.GetFlightClassById(bookingRequest.Tickets[0].FlightClassId)).ReturnsAsync(_flightClass);
-
-            _mockFlightService.Setup(service => service.GetFlightClassById(bookingRequest.Tickets[0].FlightClassId)).ReturnsAsync(_flightClass);
-
-            _mockTicketAvailabilityChecker.Setup(service => service.CheckTicketAvailability()).Returns(true);
-
-        var result = await _bookingService.CreateBooking(bookingRequest);
-
-        Assert.True(result.IsSucces);
-        Assert.NotNull(result.Data);
-        Assert.Equal("The booking was created successfully.", result.Message);
-    }
-
-
-        
-
+            Assert.True(result.IsSucces);
+            Assert.NotNull(result.Data);
+            Assert.Equal("The booking was created successfully.", result.Message);
+        }
 
 
     }
